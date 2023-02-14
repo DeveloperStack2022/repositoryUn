@@ -1,0 +1,1 @@
+export * from './tema_slice'
