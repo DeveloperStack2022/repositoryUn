@@ -16,7 +16,7 @@ import DesignServicesTwoToneIcon from '@mui/icons-material/DesignServicesTwoTone
 // Me Icons
 import GroupsTwoToneIcon from '@mui/icons-material/GroupsTwoTone';
 import PersonOutlineTwoToneIcon from '@mui/icons-material/PersonOutlineTwoTone';
-
+import DescriptionIcon from '@mui/icons-material/Description';
 import BrightnessLowTwoToneIcon from '@mui/icons-material/BrightnessLowTwoTone';
 import MmsTwoToneIcon from '@mui/icons-material/MmsTwoTone';
 import TableChartTwoToneIcon from '@mui/icons-material/TableChartTwoTone';
@@ -231,6 +231,17 @@ function SidebarMenu() {
                   startIcon={<PersonOutlineTwoToneIcon />}
                 >
                   Policias
+                </Button>
+              </ListItem>
+              <ListItem component="div">
+                <Button
+                  disableRipple
+                  component={RouterLink}
+                  onClick={closeSidebar}
+                  to="/dashboards/AgregarReunion"
+                  startIcon={<DescriptionIcon />}
+                >
+                  Agregar Reunion
                 </Button>
               </ListItem>
               <ListItem component="div">

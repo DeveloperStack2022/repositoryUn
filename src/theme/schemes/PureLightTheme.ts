@@ -436,6 +436,7 @@ const PureLightTheme = createTheme({
     MuiOutlinedInput: {
       styleOverrides: {
         root: {
+          borderRadius: '4px',
           '& .MuiInputAdornment-positionEnd.MuiInputAdornment-outlined': {
             paddingRight: 6
           },
@@ -443,7 +444,7 @@ const PureLightTheme = createTheme({
             borderColor: colors.alpha.black[50]
           },
           '&.Mui-focused:hover .MuiOutlinedInput-notchedOutline': {
-            borderColor: colors.primary.main
+            borderColor: colors.primary.main,
           }
         }
       }

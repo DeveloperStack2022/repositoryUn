@@ -88,31 +88,31 @@ type Persona = {
 
 const serializeData = function (data:any){
     
-    return data.tema_Rutas.map((e,index):ReunionData => {
-        const tema_text = e.tema_text;
-        const lugar = e.invitacion.map(i => {
-          return {lugar:i.lugar}
-        })
-        const tipo_reuinion = e.invitacion.map(i => {
-          return {tipo_reuinion:i.TipoReunion.tipo_reunion}
-        })
-        const personas = e.invitacion.map((i) => {
-          let valor =  i.personas.map((elem):Persona => {
-            return {
-              gradoPolicial:elem.Personas.gradoPolicial,
-              nombres:elem.Personas.nombres,
-              apellidos: elem.Personas.apellidos
-            }
-          })
-          return valor
-        })
-        return {
-          lugar,
-          tema_text,
-          tipo_reuinion,
-          personas,
-        }
-    })
+    // return data.tema_Rutas.map((e,index):ReunionData => {
+    //     const tema_text = e.tema_text;
+    //     const lugar = e.invitacion.map(i => {
+    //       return {lugar:i.lugar}
+    //     })
+    //     const tipo_reuinion = e.invitacion.map(i => {
+    //       return {tipo_reuinion:i.TipoReunion.tipo_reunion}
+    //     })
+    //     const personas = e.invitacion.map((i) => {
+    //       let valor =  i.personas.map((elem):Persona => {
+    //         return {
+    //           gradoPolicial:elem.Personas.gradoPolicial,
+    //           nombres:elem.Personas.nombres,
+    //           apellidos: elem.Personas.apellidos
+    //         }
+    //       })
+    //       return valor
+    //     })
+    //     return {
+    //       lugar,
+    //       tema_text,
+    //       tipo_reuinion,
+    //       personas,
+    //     }
+    // })
 }   
 
 function WatchList() {
@@ -131,12 +131,12 @@ function WatchList() {
   const getTemasQuery = useQuery(GET_TEMAS_WITH_INVITACION_PERSONAS)
   let datosTemas = []
  
-  React.useEffect(() => {
-    if(getTemasQuery.loading == false){
-      datosTemas = serializeData(getTemasQuery.data)
-      setTemasSerialize(datosTemas)
-    }
-  },[getTemasQuery.loading])
+  // React.useEffect(() => {
+  //   if(getTemasQuery.loading == false){
+  //     datosTemas = serializeData(getTemasQuery.data)
+  //     setTemasSerialize(datosTemas)
+  //   }
+  // },[getTemasQuery.loading])
   return (
   <>
     <Combox loadingTemas={dataQuery.loading} errorTemas={dataQuery.error} dataTemas={dataQuery.data} />

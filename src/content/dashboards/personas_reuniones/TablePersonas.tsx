@@ -38,26 +38,26 @@ type PersonaModel = {
     tipo_reunion:string[]
 }
 
-const GET_PERSONAS_INVITACION = gql`
-    query FindManyPersonas {
-    findManyPersonas {
-        gradoPolicial
-        nombres
-        apellidos
-        invitaciones {
-            Invitacion {
-                tema_ruta {
-                    tema_text
-                }
-                lugar
-                TipoReunion {
-                    tipo_reunion
-                }
-            }
-        }
-    }
-    }
-`
+// const GET_PERSONAS_INVITACION = gql`
+//     query FindManyPersonas {
+//     findManyPersonas {
+//         gradoPolicial
+//         nombres
+//         apellidos
+//         invitaciones {
+//             Invitacion {
+//                 tema_ruta {
+//                     tema_text
+//                 }
+//                 lugar
+//                 TipoReunion {
+//                     tipo_reunion
+//                 }
+//             }
+//         }
+//     }
+//     }
+// `
 
 function SerializeData(data:PersonaInfo[]) {
     return data.map((element) => {
@@ -77,17 +77,17 @@ function SerializeData(data:PersonaInfo[]) {
 
 const columnHelper = createColumnHelper<PersonaModel>();
 export const PersonasTable = () => {
-    const {loading,data,error} =  useQuery(GET_PERSONAS_INVITACION)
+    // const {loading,data,error} =  useQuery(GET_PERSONAS_INVITACION)
     const [dataInformation, setData] = React.useState<any[]>([])
    
-    React.useEffect(() => {
-        if(loading == false){
-            let {findManyPersonas} = data;
-            let datos_ = SerializeData(findManyPersonas)
-            console.log(datos_)
-            setData([...datos_])
-        }
-    },[loading])
+    // React.useEffect(() => {
+    //     if(loading == false){
+    //         let {findManyPersonas} = data;
+    //         let datos_ = SerializeData(findManyPersonas)
+    //         console.log(datos_)
+    //         setData([...datos_])
+    //     }
+    // },[loading])
     
     const [grouping, setGrouping] = React.useState<GroupingState>([])
     const columns = [

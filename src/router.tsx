@@ -22,6 +22,7 @@ const Overview = Loader(lazy(() => import('src/content/overview')));
 
 const Crypto = Loader(lazy(() => import('src/content/dashboards/Crypto')));
 const TablePersonasInformation =Loader(lazy(() => import('src/content/dashboards/personas_reuniones')));
+const AgregarReunion = Loader(lazy(() => import('src/content/Add_Reunion')))
 
 // Applications
 
@@ -136,6 +137,10 @@ const routes: RouteObject[] = [
       {
         path: 'personas',
         element: <TablePersonasInformation />
+      },
+      {
+        path: 'AgregarReunion',
+        element: <AgregarReunion />
       },
       {
         path: 'messenger',
