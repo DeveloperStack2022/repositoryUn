@@ -1,164 +1,423 @@
-import {useEffect} from 'react'
-import {Button,Paper,TextField,Typography,Grid,Select,MenuItem } from '@mui/material'
-import {LocalizationProvider} from '@mui/x-date-pickers/LocalizationProvider'
-import {DesktopDatePicker} from '@mui/x-date-pickers/DesktopDatePicker';
-import {TimePicker} from '@mui/x-date-pickers/TimePicker'
+import { useEffect, useState } from 'react';
+import {
+  Button,
+  Paper,
+  TextField,
+  Typography,
+  Grid,
+  Select,
+  MenuItem,
+  Autocomplete,
+  InputLabel,
+  FormControl 
+} from '@mui/material';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
+import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
-import {useForm,Controller,SubmitHandler} from 'react-hook-form'
-import {zodResolver} from '@hookform/resolvers/zod'
-import {z} from 'zod'
-import moment from 'moment'
+import { useForm, Controller, SubmitHandler } from 'react-hook-form';
+import { z } from 'zod';
+import moment from 'moment';
+import { useQuery,useMutation } from '@apollo/client';
+//
+import { Tema_Rutas, findManyPersonas,CreateOneInvitacion,CreatePersonasOnInvitacion } from './graphql';
+
+//Custom Components
+import ModalDialog from './components/Modal_CreatePersona';
+import TemaSearchInput from './components/AutoComplete_Temas'
+import ModalDialogTema from './components/ModalCreateTema'
 
 type FormInput = {
-    nombrePersona: string;
-}
-const tipo = ['REUNION','TALLER','VIDEOCONFERENCIA','MESA DE TRABAJO'] as const;
-const medio_tipo = ['PRESENCIAL','VIRTUAL'] as const;
+  nombrePersona: string;
+};
+const tipo = [
+  'REUNION',
+  'TALLER',
+  'VIDEOCONFERENCIA',
+  'MESA DE TRABAJO'
+] as const;
+const medio_tipo = ['PRESENCIAL', 'VIRTUAL'] as const;
 
-// const validateSchema = z.object({
-//     nombrePersona: z.string().max(100),
-//     tema:z.string(),
-//     n_documento:z.string(),
-//     tipo:z.enum(tipo),
-//     lugar:z.string().max(100),
-//     medio_tipo: z.enum(medio_tipo),
-//     // fecha_recepcion:z.string(),
-//     // fecha_asistencia: z.string(),
-//     // hora_asistencia: z.string().datetime()
-// })
-// type ValidationSchema = z.infer<typeof validateSchema>
+const Persona = z.object({
+  label:z.string(),
+  value:z.number()
+});
+const Tema = z.object({
+  id: z.number(),
+  label:z.string()
+})
 
+const validateSchema = z.object({
+  nombrePersona: Persona,
+  tema: Tema,
+  n_documento: z.string(),
+  tipo: z.enum(tipo),
+  lugar: z.string().max(100),
+  medio_tipo: z.enum(medio_tipo),
+  fecha_recepcion: z.preprocess((arg) => {
+    if (typeof arg == 'string' || arg instanceof Date) return new Date();
+  }, z.date()),
+  fecha_asistencia: z.preprocess((arg) => {
+    if (typeof arg == 'string' || arg instanceof Date) return new Date();
+  }, z.date()),
+  hora_asistencia: z.preprocess((arg) => {
+    if (typeof arg == 'string' || arg instanceof Date) return new Date();
+  }, z.date())
+});
+
+type ValidationSchema = z.infer<typeof validateSchema>;
 
 const OptionsReuniones = [
-    {
-        label:"REUNION",
-        value: "REUNION"
-    },
-    {
-        label:'TALLER',
-        value:'TALLER',
-    },
-    {
-        label:'MESA DE TRABAJO',
-        value:'MESA DE TRABAJO'
-    },
-    {
-        label:'VIDEOCONFERENCIA',
-        value: 'VIDEOCONFERENCIA'
-    }
-]
+  {
+    label: 'REUNION',
+    value: 'REUNION'
+  },
+  {
+    label: 'TALLER',
+    value: 'TALLER'
+  },
+  {
+    label: 'MESA DE TRABAJO',
+    value: 'MESA DE TRABAJO'
+  },
+  {
+    label: 'VIDEOCONFERENCIA',
+    value: 'VIDEOCONFERENCIA'
+  }
+];
 
 const OptionsAsistencia = [
-    {
-        label:'PRESENCIAL',
-        value: 'PRESENCIAL'
-    },
-    {
-        label:'VIRTUAL',
-        value:'VIRTUAL'
-    }
-]
+  {
+    label: 'PRESENCIAL',
+    value: 'PRESENCIAL'
+  },
+  {
+    label: 'VIRTUAL',
+    value: 'VIRTUAL'
+  }
+];
 
-const GenerateItems =  () => {
-    return OptionsReuniones.map((_,index) => {
-        return <MenuItem key={index} value={_.value}>{_.label}</MenuItem>
-    })
-}
+const GenerateItems = () => {
+  return OptionsReuniones.map((_, index) => {
+    return (
+      <MenuItem key={index} value={_.value}>
+        {_.label}
+      </MenuItem>
+    );
+  });
+};
 
 const GenerateItemsAsistencia = () => {
-    return OptionsAsistencia.map((_,index) => {
-        return <MenuItem key={index} value={_.value}>{_.label}</MenuItem>
-    })
-}
-
-type SchemaForm = {
-
-}
-
-
-const AddReunion = () => {
-    const {handleSubmit,formState:{errors},control} = useForm({mode:"all"})
-    const onSubmitHandler = (values) => {
-        console.log(values);
-      };
-    
-    useEffect(()=> {
-        console.log(errors)
-    },[errors])
+  return OptionsAsistencia.map((_, index) => {
     return (
-       <form onSubmit={handleSubmit(onSubmitHandler)} autoComplete="off">
-        <Paper variant="outlined" sx={{ my: { xs: 3, md: 6 }, p: { xs: 2, md: 3 } }} >
-            <Typography component="h3" variant="h3" align="center">
-                Agregar Reunion
-            </Typography>
-            <LocalizationProvider  dateAdapter={AdapterMoment}>
-            <Grid container spacing={3} sx={{mt:2}}>
-                <Grid item xs={12} sm={6}>
-                    <Controller control={control} name="nombrePersona" render={({ field}) => (
-                        <TextField variant="outlined" {...field} label="Nombre Policia" fullWidth  />
-                        )} />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                <Controller control={control} name="n_documento" render={({field}) => (
-                    <TextField variant="outlined" {...field} label="N. Documento" fullWidth  />
-                    )} />    
-                </Grid>
-                <Grid item xs={6} sm={6}>
-                    <Controller control={control} name="tipo" render={({field}) => (
-                        <>
-                            <Select {...field} label="tipo" sx={{width:"100%"}} defaultValue={"Tipo Reunion"} >
-                                {GenerateItems()}
-                            </Select>
-                        </>
-                    )} />    
-                </Grid>
-                <Grid item xs={6} sm={6}>
-                     <Controller control={control} name="medio_tipo" render={({field}) => (
-                        <>
-                            <Select {...field} label="Tipo Asistencia" sx={{width:"100%"}} defaultValue={"Tipo Reunion"} >
-                                {GenerateItemsAsistencia()}
-                            </Select>
-                        </>
-                    )} />    
-                </Grid>
-                <Grid item xs={12} sm={6}>
+      <MenuItem key={index} value={_.value}>
+        {_.label}
+      </MenuItem>
+    );
+  });
+};
 
-                    <Controller control={control} name="lugar" render={({field}) => (
-                        <TextField variant="outlined" {...field} label="Lugar" fullWidth  />
-                        )} />    
-                </Grid>
-                <Grid item xs={6} sm={6}>
+// ###############################################################
+const AddReunion = () => {
+  // Initialize states
+  const [DataPersonasState, setDataPersonas] = useState<
+    [
+      {
+        label: string;
+        value: number;
+      }
+    ]
+  >([{ label: '', value: 0 }]);
+  const [TemaData,setTemaData] = useState<[{id:number,label:string}]>()
+  const [OpenModal,setOpenModal] = useState<boolean>(false)
+  const [OpenModalCreateTema, setOpenModalCreateTema] = useState<boolean>(false)
 
-                <Controller control={control} name="fecha_recepcion" render={({field}) => (
-                        <DesktopDatePicker label={"Fecha Recepcion"} inputFormat="MM/DD/YYYY" {...field} renderInput={(params) =>       <TextField {...params} fullWidth />} />
-                        )} />    
-                </Grid>
-                <Grid item xs={6} sm={6}>
+  // End States
+  // react-hook-form -----------------------------
+  const {
+    handleSubmit,
+    formState: { errors },
+    control
+  } = useForm<ValidationSchema>({ mode: 'all' });
+  //End react-hook-form --------------------------
+  //Querys - GraphQL -----------------------------
+  const {
+    data: DataPersonas,
+    loading: LoadingPersonas,
+    error: ErorrPersonas
+  } = useQuery(findManyPersonas);
+  const {
+    data: DataTemasRutas,
+    loading: LoadingTemaRutas,
+    error: ErrorTemasRutas
+  } = useQuery(Tema_Rutas);
+  // ---------------------------------------
 
-                <Controller control={control} name="fecha_asistencia" render={({field:{onChange,value}}) => (
-                    <DesktopDatePicker label={"Fecha Asistencia"} inputFormat="MM/DD/YYYY" value={value}  onChange={(event) => {
-                        console.log(event)
-                    }} renderInput={(params) => <TextField {...params}   fullWidth/>} />
-                    )} />   
-                </Grid>
-                   
-               
-                <Grid item xs={12} sm={6}>
-                    <Controller control={control} name="hora_asistencia" render={({field}) => ( 
-                        <TimePicker label="Hora Asistencia"   {...field}  renderInput={(params) => <TextField {...params}  fullWidth /> } />
-                        )} />
-                </Grid>
-                <Grid item xs={12} sm={12}>
-                    <Controller control={control} name="tema" render={({field}) => ( 
-                        <TextField variant="outlined" {...field} label="Tema" fullWidth  multiline  />
-                        )} />
-                </Grid>
+  //Mutations - GraphQL --------------------
+  const [createInvitacion,{loading:LoadingCreateInvitacion,error}] = useMutation(CreateOneInvitacion)
+  const [createPersonaOnInvitacion,{data:dataCreatePersonaOnInvitacion,loading:loadingCreatePersonaOnInvitacion,error:errorCreatePersonaOnInvitacion}] = useMutation(CreatePersonasOnInvitacion)
+  // ---------------------------------------
+ 
+
+  useEffect(() => {
+    if(LoadingTemaRutas == false){
+      const temaRutaSerializada =  DataTemasRutas.tema_Rutas.map(elem => {
+        return {
+          id:elem.id,
+          label:elem.tema_text
+        }
+      })
+      setTemaData(temaRutaSerializada)
+    }
+    return () => {}
+  }, [LoadingTemaRutas])
+  
+  useEffect(() => {
+    if (LoadingPersonas == false) {
+      // Serialize Data
+
+      const datosSerializados = DataPersonas.findManyPersonas.map((elem) => {
+        return {
+          label: `${elem.gradoPolicial} ${elem.nombres} ${elem.apellidos}`,
+          value: elem.id
+        };
+      });
+      setDataPersonas(datosSerializados);
+    }
+    return () => {};
+  }, [LoadingPersonas]);
+
+  const onSubmitHandler: SubmitHandler<ValidationSchema> = async (values) => {
+   
+    const {data:DataResponse} = await createInvitacion({variables:{
+      data: {
+        "F_Recepcion": moment(values.fecha_recepcion).format('DD/MM/YYYY'),
+        "fecha_real": moment(values.fecha_asistencia).format('DD/MM/YYYY'),
+        "N_Documento": values.n_documento,
+        "hora": moment(values.hora_asistencia).format('HH:mm'),
+        "lugar": values.lugar,
+        "TipoReunion": {
+          "connect": {
+            "id": 2
+          }
+        },
+        "tema_ruta": {
+          "connect": {
+            "id": values.tema.id
+          }
+        },
+        "Tipo_R": {
+          "connect": {
+            "id": 1
+          }
+        },
+      }
+    }})
+   
+    createPersonaOnInvitacion({variables:{
+      "personaId": values.nombrePersona.value,
+      "invitacionId": DataResponse.createOneInvitacion.id
+    }}) 
+  };
+
+  //Actions Modal Dialogs 
+  const handleActionsModal = () => setOpenModal(prev => !prev);
+  const handleClickActionModalTema = () => setOpenModalCreateTema(prev => !prev)
+  //
+
+  return (
+    <>
+      <ModalDialog open={OpenModal} handleActionsModal={handleActionsModal} />
+      <ModalDialogTema open={OpenModalCreateTema} handleActionsModal={handleClickActionModalTema} />
+
+      <form onSubmit={handleSubmit(onSubmitHandler)} autoComplete="off">
+        <Paper
+          variant="outlined"
+          sx={{ my: { xs: 3, md: 6 }, p: { xs: 2, md: 3 } }}
+        >
+          <Typography component="h3" variant="h3" align="center">
+            Agregar Reunion
+          </Typography>
+          <LocalizationProvider dateAdapter={AdapterMoment}>
+            <Grid container spacing={3} sx={{ my: 2 }}>
+              <Grid item xs={12} sm={6}>
+                <Controller
+                  control={control}
+                  name="nombrePersona"
+                  render={(props) => (
+                    <Autocomplete
+                      options={DataPersonasState}
+                      {...props}
+                      renderInput={(params) => (
+                        <TextField {...params} label={'Nombre Policia'} />
+                      )}
+                      onChange={(_,data) => props.field.onChange(data)}
+                      noOptionsText={
+                        <Button
+                          variant="contained"
+                          size="small"
+                          sx={{ width: '100%' }}
+                          onClick={handleActionsModal}
+                        >
+                          Crear nueva persona
+                        </Button>
+                      }
+                    />
+                  )}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <Controller
+                  control={control}
+                  name="n_documento"
+                  render={({ field }) => (
+                    <TextField
+                      variant="outlined"
+                      {...field}
+                      label="N. Documento"
+                      fullWidth
+                    />
+                  )}
+                />
+              </Grid>
+              <Grid item xs={6} sm={6}>
+                
+                <Controller
+                  control={control}
+                  name="tipo"
+                  render={({ field }) => (
+                    <FormControl fullWidth>
+                      <InputLabel id="seleccion">Tipo</InputLabel>
+                      <Select
+                        id="seleccion"
+                        {...field}
+                        label="Tipo"
+                        sx={{ width: '100%' }}
+                        defaultValue={'Tipo Reunion'}
+                      >
+                        {GenerateItems()}
+                      </Select>
+                    </FormControl>
+                  )}
+                />
+              </Grid>
+              <Grid item xs={6} sm={6}>
+                <Controller
+                  control={control}
+                  name="medio_tipo"
+                  render={({ field }) => (
+                    <FormControl fullWidth>
+                      <InputLabel  id="seleccion">Asistencia</InputLabel>
+                      <Select
+                        {...field}
+                        label="Asistencia"
+                        sx={{ width: '100%' }}
+                        defaultValue={'Tipo Reunion'}
+                      >
+                        {GenerateItemsAsistencia()}
+                      </Select>
+                    </FormControl>
+                  )}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <Controller
+                  control={control}
+                  name="lugar"
+                  render={({ field }) => (
+                    <TextField
+                      variant="outlined"
+                      {...field}
+                      label="Lugar"
+                      fullWidth
+                    />
+                  )}
+                />
+              </Grid>
+              <Grid item xs={6} sm={6}>
+                <Controller
+                  control={control}
+                  name="fecha_recepcion"
+                  render={({ field }) => (
+                    <DesktopDatePicker
+                      label={'Fecha Recepcion'}
+                      inputFormat="DD/MM/YYYY"
+                      {...field}
+                      renderInput={(params) => (
+                        <TextField {...params} fullWidth />
+                      )}
+                    />
+                  )}
+                />
+              </Grid>
+              <Grid item xs={6} sm={6}>
+                <Controller
+                  control={control}
+                  name="fecha_asistencia"
+                  render={({ field }) => (
+                    <DesktopDatePicker
+                      label={'Fecha Asistencia'}
+                      inputFormat="DD/MM/YYYY"
+                      {...field}
+                      renderInput={(params) => (
+                        <TextField {...params} fullWidth />
+                      )}
+                    />
+                  )}
+                />
+              </Grid>
+
+              <Grid item xs={12} sm={6}>
+                <Controller
+                  control={control}
+                  name="hora_asistencia"
+                  render={({ field }) => (
+                    <TimePicker
+                      label="Hora Asistencia"
+                      {...field}
+                      renderInput={(params) => (
+                        <TextField {...params} fullWidth />
+                      )}
+                    />
+                  )}
+                />
+              </Grid>
+              <Grid item xs={12} sm={12}>
+                <Controller 
+                  control={control} 
+                  name="tema" 
+                  render={(props) => (
+                    <Autocomplete
+                      {...props}
+                      options={TemaData}
+                      renderInput={(params) => (
+                        <TextField {...params} label="Tema" variant="outlined" />
+                      )}
+                      onChange={(_,data) => props.field.onChange(data)}
+                      noOptionsText={
+                        <Button
+                          variant="contained"
+                          size="small"
+                          sx={{ width: '100%' }}
+                          onClick={handleClickActionModalTema}
+                        >
+                          Crear nuevo tema
+                        </Button>
+                      }
+                    />
+                  )}
+                />
+                
+              </Grid>
             </Grid>
-            </LocalizationProvider>
-            <Button type={"submit"} variant={"contained"}>Enviar</Button>
+          </LocalizationProvider>
+          <Button type={'submit'} variant={'contained'}>
+            Enviar
+          </Button>
         </Paper>
-       </form>
-    )
-}
+      </form>
+    </>
+  );
+};
 
 export default AddReunion;
