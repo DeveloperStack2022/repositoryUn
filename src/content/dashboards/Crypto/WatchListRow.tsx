@@ -65,11 +65,11 @@ const WatchListRow:FC<PropsComponent> = ({dataOneUser,loading}) => {
   let data:any = []
   let data_nombres = []
   if(!loading){
-    // const {findManyPersonas} = dataOneUser;
-    // findManyPersonas.map(elem => {
-    //   data_nombres.push(`${elem.nombres} ${elem.apellidos.charAt(0)}`)
-    //   return data.push(elem._count.invitaciones)
-    // })
+    const {findManyPersonas} = dataOneUser;
+    findManyPersonas.map(elem => {
+      data_nombres.push(` ${elem.apellidos} ${elem.nombres.charAt(0)}`)
+      return data.push(elem._count.invitaciones)
+    })
   }
   
 
@@ -123,7 +123,7 @@ const WatchListRow:FC<PropsComponent> = ({dataOneUser,loading}) => {
   };
 
   return (
-    <Card sx={{marginTop:2}}>
+    <Card sx={{marginTop:2,marginBottom:2}}>
       {/* {JSON.stringify(data)} */}
       <Stack
         direction="row"

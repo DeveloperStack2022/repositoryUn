@@ -19,7 +19,7 @@ export const Combox:React.FC<IPropsComponent> = ({dataTemas,errorTemas,loadingTe
     const dispatch = useAppDispatch()
     const datos = []
     if(!loadingTemas){
-        // dataTemas.tema_Rutas.map(elem => datos.push({id: elem.id,label:elem.tema_text}))
+        dataTemas.tema_Rutas.map(elem => datos.push({id: elem.id,label:elem.tema_text}))
     }
 
     React.useEffect(() => {

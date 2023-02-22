@@ -13,7 +13,7 @@ import ThemeProvider from './theme/ThemeProvider';
 function App() {
   const content = useRoutes(router);
   const client = new ApolloClient({
-  uri: 'http://192.168.68.118:8000/graphql',
+  uri: 'https://7c71-186-47-81-6.ngrok.io/graphql',
   cache: new InMemoryCache(),
 });
   return (

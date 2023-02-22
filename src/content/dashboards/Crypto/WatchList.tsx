@@ -88,31 +88,31 @@ type Persona = {
 
 const serializeData = function (data:any){
     
-    // return data.tema_Rutas.map((e,index):ReunionData => {
-    //     const tema_text = e.tema_text;
-    //     const lugar = e.invitacion.map(i => {
-    //       return {lugar:i.lugar}
-    //     })
-    //     const tipo_reuinion = e.invitacion.map(i => {
-    //       return {tipo_reuinion:i.TipoReunion.tipo_reunion}
-    //     })
-    //     const personas = e.invitacion.map((i) => {
-    //       let valor =  i.personas.map((elem):Persona => {
-    //         return {
-    //           gradoPolicial:elem.Personas.gradoPolicial,
-    //           nombres:elem.Personas.nombres,
-    //           apellidos: elem.Personas.apellidos
-    //         }
-    //       })
-    //       return valor
-    //     })
-    //     return {
-    //       lugar,
-    //       tema_text,
-    //       tipo_reuinion,
-    //       personas,
-    //     }
-    // })
+    return data.tema_Rutas.map((e,index):ReunionData => {
+        const tema_text = e.tema_text;
+        const lugar = e.invitacion.map(i => {
+          return {lugar:i.lugar}
+        })
+        const tipo_reuinion = e.invitacion.map(i => {
+          return {tipo_reuinion:i.TipoReunion.tipo_reunion}
+        })
+        const personas = e.invitacion.map((i) => {
+          let valor =  i.personas.map((elem):Persona => {
+            return {
+              gradoPolicial:elem.Personas.gradoPolicial,
+              nombres:elem.Personas.nombres,
+              apellidos: elem.Personas.apellidos
+            }
+          })
+          return valor
+        })
+        return {
+          lugar,
+          tema_text,
+          tipo_reuinion,
+          personas,
+        }
+    })
 }   
 
 function WatchList() {
@@ -121,6 +121,7 @@ function WatchList() {
   const {id} = useAppSelector((state) => state.tema )
   const {loading,data,error} = useQuery<GET_DATA>(GET_NUMERO_INVITACIONES);
   const dataQuery = useQuery<TemasData>(GET_TEMA_TEXT);
+
   const getTemaQuery = useQuery(GET_TEMA_WITH_INVITACION,{
     variables:{
       "where": {
@@ -131,21 +132,21 @@ function WatchList() {
   const getTemasQuery = useQuery(GET_TEMAS_WITH_INVITACION_PERSONAS)
   let datosTemas = []
  
-  // React.useEffect(() => {
-  //   if(getTemasQuery.loading == false){
-  //     datosTemas = serializeData(getTemasQuery.data)
-  //     setTemasSerialize(datosTemas)
-  //   }
-  // },[getTemasQuery.loading])
+  React.useEffect(() => {
+    if(getTemasQuery.loading == false){
+      datosTemas = serializeData(getTemasQuery.data)
+      setTemasSerialize(datosTemas)
+    }
+  },[getTemasQuery.loading])
   return (
   <>
-    <Combox loadingTemas={dataQuery.loading} errorTemas={dataQuery.error} dataTemas={dataQuery.data} />
-    {/* {!id ? <> <TableTema data_props={getTemasQuery.data} data_temas={TemasSerialize} loading={getTemasQuery.loading} />   </> : <TableTemas temas={false} data={getTemaQuery.data} loading={getTemaQuery.loading} error={getTemaQuery.error} /> } */}
-
-    <CardDropDown nombres='Tnt. Milton Jimenez' />
-    <CardDropDown nombres='Tnt. Milton Jimenez' />
-    <CardDropDown nombres='Tnt. Milton Jimenez' />
     <WatchListRow dataOneUser={data} loading={loading}  />
+    <Combox loadingTemas={dataQuery.loading} errorTemas={dataQuery.error} dataTemas={dataQuery.data} />
+    {!id ? <> <TableTema data_props={getTemasQuery.data} data_temas={TemasSerialize} loading={getTemasQuery.loading} />   </> : <TableTemas temas={false} data={getTemaQuery.data} loading={getTemaQuery.loading} error={getTemaQuery.error} /> }
+
+    {/* <CardDropDown nombres='Tnt. Milton Jimenez' />
+    <CardDropDown nombres='Tnt. Milton Jimenez' />
+    <CardDropDown nombres='Tnt. Milton Jimenez' /> */}
   </>
   ) 
 }
