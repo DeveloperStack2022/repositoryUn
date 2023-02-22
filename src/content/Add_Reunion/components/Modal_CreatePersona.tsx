@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import { FC, useRef, FormEvent, useState } from 'react';
 // Material UI
 import {
   Box,
@@ -21,16 +21,32 @@ interface IProps {
   open: boolean;
 }
 
-const DialogCreatePersona: FC<IProps> = ({ open }) => {
+const DialogCreatePersona: FC<IProps> = ({ ...props }) => {
+  const { open } = props;
+  const [OpenDialog, setOpenDialog] = useState<boolean>(open);
+
+  let elementButton = useRef(null);
+  const handleClick = () => {
+    elementButton.current.click();
+  };
+  const handleClose = () => setOpenDialog((prev) => !prev);
+
+  const handleSubmitForm = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    console.log('Submit');
+    handleClose();
+  };
+  const handleCancelClick = () => handleClose();
+
   return (
     <Dialog
-      open={open}
+      open={OpenDialog}
       sx={{ '& .MuiDialog-paper': { width: '80%', maxHeight: 435 } }}
       maxWidth="xs"
     >
       <DialogTitle>Create Persona</DialogTitle>
       <DialogContent dividers>
-        <Box component={'form'}>
+        <Box component={'form'} onSubmit={handleSubmitForm}>
           <FormControl sx={{ width: '100%', marginBottom: '.5rem' }}>
             <InputLabel>Select Grado</InputLabel>
             <Select label="Select Grado">
@@ -49,11 +65,14 @@ const DialogCreatePersona: FC<IProps> = ({ open }) => {
             label="Apellidos"
             variant="outlined"
           />
+          <button type="submit" hidden ref={elementButton}></button>
         </Box>
       </DialogContent>
       <DialogActions>
-        <Button>Cancel</Button>
-        <Button variant="contained">Submit</Button>
+        <Button onClick={handleCancelClick}>Cancel</Button>
+        <Button variant="contained" onClick={handleClick}>
+          Submit
+        </Button>
       </DialogActions>
     </Dialog>
   );

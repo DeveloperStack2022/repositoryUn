@@ -9,6 +9,7 @@ import {
   MenuItem,
   Autocomplete
 } from '@mui/material';
+import { makeStyles } from '@mui/material/styles';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
@@ -105,7 +106,6 @@ const GenerateItemsAsistencia = () => {
 };
 
 // ###############################################################
-
 const AddReunion = () => {
   // Initialize states
   const [DataPersonasState, setDataPersonas] = useState<
@@ -175,7 +175,7 @@ const AddReunion = () => {
             Agregar Reunion
           </Typography>
           <LocalizationProvider dateAdapter={AdapterMoment}>
-            <Grid container spacing={3} sx={{ mt: 2 }}>
+            <Grid container spacing={3} sx={{ my: 2 }}>
               <Grid item xs={12} sm={6}>
                 <Controller
                   control={control}
