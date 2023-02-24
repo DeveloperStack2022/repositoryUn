@@ -1,11 +1,10 @@
-import { FC, useRef, FormEvent, useState } from 'react';
+import { FC, useRef} from 'react';
+import {useMutation} from '@apollo/client'
+import {createOnePersonasT,createOnePersonas} from '../graphql'
 // Material UI
 import {
   Box,
   Button,
-  List,
-  ListItem,
-  ListItemText,
   DialogTitle,
   DialogContent,
   DialogActions,
@@ -18,7 +17,6 @@ import {
  
 } from '@mui/material';
 import { useForm, Controller, SubmitHandler } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 
 const options = [
@@ -63,10 +61,12 @@ type ValidationSchema = z.infer<typeof validateSchema>;
 interface IProps {
   open: boolean;
   handleActionsModal: () => void;
+  refetch: () => void
 }
 
 const DialogCreatePersona: FC<IProps> = ({ ...props }) => {
-  const { open,handleActionsModal } = props;
+  const { open,handleActionsModal,refetch } = props;
+  const [create] = useMutation<{},createOnePersonasT>(createOnePersonas)
   //React hooks form 
   const {
     handleSubmit,
@@ -81,8 +81,18 @@ const DialogCreatePersona: FC<IProps> = ({ ...props }) => {
   };
   
 
-  const handleSubmitForm:SubmitHandler<ValidationSchema> = (e) => {
-    console.log(e)
+  const handleSubmitForm:SubmitHandler<ValidationSchema> = async (e) => {
+    await create({
+      variables:{
+        data:{
+          gradoPolicial:e.grado_policia,
+          nombres:e.nombre,
+          apellidos:e.apellido
+        }
+      },
+      onCompleted: () => refetch()
+    })
+    
     reset()
     handleActionsModal();
   };

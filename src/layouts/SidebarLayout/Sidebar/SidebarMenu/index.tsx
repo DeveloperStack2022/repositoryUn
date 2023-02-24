@@ -35,6 +35,7 @@ import ChromeReaderModeTwoToneIcon from '@mui/icons-material/ChromeReaderModeTwo
 import WorkspacePremiumTwoToneIcon from '@mui/icons-material/WorkspacePremiumTwoTone';
 import CameraFrontTwoToneIcon from '@mui/icons-material/CameraFrontTwoTone';
 import DisplaySettingsTwoToneIcon from '@mui/icons-material/DisplaySettingsTwoTone';
+import BookIcon from '@mui/icons-material/Book';
 
 const MenuWrapper = styled(Box)(
   ({ theme }) => `
@@ -238,10 +239,32 @@ function SidebarMenu() {
                   disableRipple
                   component={RouterLink}
                   onClick={closeSidebar}
+                  to="/dashboards/cursos"
+                  startIcon={<BookIcon />}
+                >
+                  Cursos
+                </Button>
+              </ListItem>
+              <ListItem component="div">
+                <Button
+                  disableRipple
+                  component={RouterLink}
+                  onClick={closeSidebar}
                   to="/dashboards/AgregarReunion"
                   startIcon={<DescriptionIcon />}
                 >
                   Agregar Reunion
+                </Button>
+              </ListItem>
+              <ListItem component="div">
+                <Button
+                  disableRipple
+                  component={RouterLink}
+                  onClick={closeSidebar}
+                  to="/dashboards/AgregarCursos"
+                  startIcon={<DescriptionIcon />}
+                >
+                  Agregar Cursos
                 </Button>
               </ListItem>
               <ListItem component="div">

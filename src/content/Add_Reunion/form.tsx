@@ -20,7 +20,7 @@ import { z } from 'zod';
 import moment from 'moment';
 import { useQuery,useMutation } from '@apollo/client';
 //
-import { Tema_Rutas, findManyPersonas,CreateOneInvitacion,CreatePersonasOnInvitacion } from './graphql';
+import { Tema_Rutas, findManyPersonas,CreateOneInvitacion,CreatePersonasOnInvitacion,TipoReunion,TipoReunionT,Tipo_RS,Tipo_RST } from './graphql';
 
 //Custom Components
 import ModalDialog from './components/Modal_CreatePersona';
@@ -38,6 +38,14 @@ const tipo = [
 ] as const;
 const medio_tipo = ['PRESENCIAL', 'VIRTUAL'] as const;
 
+const tipo_reunion = z.object({
+  id:z.number(),
+  tipo_reunion: z.string()
+})
+const medio_ = z.object({
+  id:z.number(),
+  tipo_reunion:z.string()
+})
 const Persona = z.object({
   label:z.string(),
   value:z.number()
@@ -51,9 +59,9 @@ const validateSchema = z.object({
   nombrePersona: Persona,
   tema: Tema,
   n_documento: z.string(),
-  tipo: z.enum(tipo),
+  tipo: tipo_reunion,
+  medio_tipo: medio_,
   lugar: z.string().max(100),
-  medio_tipo: z.enum(medio_tipo),
   fecha_recepcion: z.preprocess((arg) => {
     if (typeof arg == 'string' || arg instanceof Date) return new Date();
   }, z.date()),
@@ -66,56 +74,6 @@ const validateSchema = z.object({
 });
 
 type ValidationSchema = z.infer<typeof validateSchema>;
-
-const OptionsReuniones = [
-  {
-    label: 'REUNION',
-    value: 'REUNION'
-  },
-  {
-    label: 'TALLER',
-    value: 'TALLER'
-  },
-  {
-    label: 'MESA DE TRABAJO',
-    value: 'MESA DE TRABAJO'
-  },
-  {
-    label: 'VIDEOCONFERENCIA',
-    value: 'VIDEOCONFERENCIA'
-  }
-];
-
-const OptionsAsistencia = [
-  {
-    label: 'PRESENCIAL',
-    value: 'PRESENCIAL'
-  },
-  {
-    label: 'VIRTUAL',
-    value: 'VIRTUAL'
-  }
-];
-
-const GenerateItems = () => {
-  return OptionsReuniones.map((_, index) => {
-    return (
-      <MenuItem key={index} value={_.value}>
-        {_.label}
-      </MenuItem>
-    );
-  });
-};
-
-const GenerateItemsAsistencia = () => {
-  return OptionsAsistencia.map((_, index) => {
-    return (
-      <MenuItem key={index} value={_.value}>
-        {_.label}
-      </MenuItem>
-    );
-  });
-};
 
 // ###############################################################
 const AddReunion = () => {
@@ -144,13 +102,17 @@ const AddReunion = () => {
   const {
     data: DataPersonas,
     loading: LoadingPersonas,
-    error: ErorrPersonas
+    error: ErorrPersonas,
+    refetch: refetchPersonas
   } = useQuery(findManyPersonas);
   const {
     data: DataTemasRutas,
     loading: LoadingTemaRutas,
-    error: ErrorTemasRutas
+    error: ErrorTemasRutas,
+    refetch:refetchTemasRutas
   } = useQuery(Tema_Rutas);
+  const {data:DataTipoReunion,loading:LoadingTipoReunion} = useQuery<TipoReunionT>(TipoReunion)
+  const {data:DataTipo_RS,loading:LoadingTipo_RS} = useQuery<Tipo_RST>(Tipo_RS)
   // ---------------------------------------
 
   //Mutations - GraphQL --------------------
@@ -173,6 +135,7 @@ const AddReunion = () => {
   }, [LoadingTemaRutas])
   
   useEffect(() => {
+    
     if (LoadingPersonas == false) {
       // Serialize Data
 
@@ -188,7 +151,7 @@ const AddReunion = () => {
   }, [LoadingPersonas]);
 
   const onSubmitHandler: SubmitHandler<ValidationSchema> = async (values) => {
-   
+
     const {data:DataResponse} = await createInvitacion({variables:{
       data: {
         "F_Recepcion": moment(values.fecha_recepcion).format('DD/MM/YYYY'),
@@ -198,7 +161,7 @@ const AddReunion = () => {
         "lugar": values.lugar,
         "TipoReunion": {
           "connect": {
-            "id": 2
+            "id": values.tipo
           }
         },
         "tema_ruta": {
@@ -208,7 +171,7 @@ const AddReunion = () => {
         },
         "Tipo_R": {
           "connect": {
-            "id": 1
+            "id": values.medio_tipo
           }
         },
       }
@@ -222,13 +185,13 @@ const AddReunion = () => {
 
   //Actions Modal Dialogs 
   const handleActionsModal = () => setOpenModal(prev => !prev);
-  const handleClickActionModalTema = () => setOpenModalCreateTema(prev => !prev)
+  const handleClickActionModalTema = () => {setOpenModalCreateTema(prev => !prev)}
   //
 
   return (
     <>
-      <ModalDialog open={OpenModal} handleActionsModal={handleActionsModal} />
-      <ModalDialogTema open={OpenModalCreateTema} handleActionsModal={handleClickActionModalTema} />
+      <ModalDialog open={OpenModal} handleActionsModal={handleActionsModal} refetch={refetchPersonas} />
+      <ModalDialogTema open={OpenModalCreateTema} handleActionsModal={handleClickActionModalTema} refetch={refetchTemasRutas} />
 
       <form onSubmit={handleSubmit(onSubmitHandler)} autoComplete="off">
         <Paper
@@ -285,17 +248,18 @@ const AddReunion = () => {
                 <Controller
                   control={control}
                   name="tipo"
-                  render={({ field }) => (
+                  render={(props) => (
                     <FormControl fullWidth>
                       <InputLabel id="seleccion">Tipo</InputLabel>
                       <Select
                         id="seleccion"
-                        {...field}
+                        {...props}
                         label="Tipo"
                         sx={{ width: '100%' }}
                         defaultValue={'Tipo Reunion'}
+                        onChange={(_,data:{props:{value:number}}) => props.field.onChange(data.props.value)}
                       >
-                        {GenerateItems()}
+                       {!LoadingTipoReunion && DataTipoReunion.tipoReunions.map(elem => <MenuItem key={elem.id} value={elem.id}>{elem.tipo_reunion}</MenuItem>)}
                       </Select>
                     </FormControl>
                   )}
@@ -305,16 +269,19 @@ const AddReunion = () => {
                 <Controller
                   control={control}
                   name="medio_tipo"
-                  render={({ field }) => (
+                  render={(props) => (
                     <FormControl fullWidth>
                       <InputLabel  id="seleccion">Asistencia</InputLabel>
                       <Select
-                        {...field}
+                        {...props}
                         label="Asistencia"
                         sx={{ width: '100%' }}
                         defaultValue={'Tipo Reunion'}
+                        onChange={(_,data:{props:{value:number}}) => {
+                          props.field.onChange(data.props.value)
+                        }}
                       >
-                        {GenerateItemsAsistencia()}
+                        {!LoadingTipo_RS && DataTipo_RS.tipo_RS.map(elem => <MenuItem key={elem.id} value={elem.id}>{elem.tipo_reunion}</MenuItem>)}
                       </Select>
                     </FormControl>
                   )}

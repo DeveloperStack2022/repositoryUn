@@ -6,6 +6,15 @@ export type createOnePersonasT = {
         apellidos:string;
     }
 }
+
+export type findManyPersonasT = {
+    findManyPersonas:[{
+        gradoPolicial:string;
+        nombres:string
+        apellidos:string;
+        id:number;
+    }]
+}
 export const createOnePersonas = gql`
     mutation CreateOnePersonas($data: PersonasCreateInput!) {
         createOnePersonas(data: $data) {
@@ -14,7 +23,7 @@ export const createOnePersonas = gql`
     }
 `
 export const findManyPersonas = gql`
-    query Query {
+    query FindManyPersonas {
         findManyPersonas {
             gradoPolicial
             nombres

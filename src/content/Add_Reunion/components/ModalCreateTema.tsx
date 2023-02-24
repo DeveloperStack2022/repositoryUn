@@ -1,24 +1,18 @@
-import { FC, useRef, FormEvent, useState } from 'react';
+import { FC, useRef} from 'react';
+import {useMutation} from '@apollo/client'
+import {createOneTema_Ruta,createOneTema_RutaT} from '../graphql'
 // Material UI
 import {
   Box,
   Button,
-  List,
-  ListItem,
-  ListItemText,
   DialogTitle,
   DialogContent,
   DialogActions,
   Dialog,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
   TextField,
  
 } from '@mui/material';
 import { useForm, Controller, SubmitHandler } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 
 const validateSchema = z.object({
@@ -30,10 +24,12 @@ type ValidationSchema = z.infer<typeof validateSchema>;
 interface IProps {
   open: boolean;
   handleActionsModal: () => void;
+  refetch: () => void
 }
 
 const DialogCreatePersona: FC<IProps> = ({ ...props }) => {
-  const { open,handleActionsModal } = props;
+  const { open,handleActionsModal,refetch } = props;
+  const [createOneTema,{}] = useMutation<{},createOneTema_RutaT>(createOneTema_Ruta)
   //React hooks form 
   const {
     handleSubmit,
@@ -48,8 +44,15 @@ const DialogCreatePersona: FC<IProps> = ({ ...props }) => {
   };
   
 
-  const handleSubmitForm:SubmitHandler<ValidationSchema> = (e) => {
-    console.log(e)
+  const handleSubmitForm:SubmitHandler<ValidationSchema> = async (e) => {
+    await createOneTema({
+      variables:{
+        data:{
+          tema_text:e.tema_text
+        }
+      }
+    })
+    refetch()
     reset()
     handleActionsModal();
   };
