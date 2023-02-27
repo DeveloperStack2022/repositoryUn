@@ -21,10 +21,15 @@ const Overview = Loader(lazy(() => import('src/content/overview')));
 // Dashboards
 
 const Crypto = Loader(lazy(() => import('src/content/dashboards/Crypto')));
-const TablePersonasInformation =Loader(lazy(() => import('src/content/dashboards/personas_reuniones')));
-const Cursos = Loader(lazy(() => import('src/content/dashboards/Cursos')))
-const AgregarReunion = Loader(lazy(() => import('src/content/Add_Reunion')))
-const AgregarCursos = Loader(lazy(() => import('src/content/Add_Cursos')))
+const TablePersonasInformation = Loader(
+  lazy(() => import('src/content/dashboards/personas_reuniones'))
+);
+const Cursos = Loader(lazy(() => import('src/content/dashboards/Cursos')));
+const AgregarReunion = Loader(lazy(() => import('src/content/Add_Reunion')));
+const AgregarCursos = Loader(lazy(() => import('src/content/Add_Cursos')));
+
+//
+const ByUser = Loader(lazy(() => import('src/content/dashboards/ByUser')));
 
 // Applications
 
@@ -143,6 +148,10 @@ const routes: RouteObject[] = [
       {
         path: 'Cursos',
         element: <Cursos />
+      },
+      {
+        path: 'CursosId',
+        element: <ByUser />
       },
       {
         path: 'AgregarReunion',

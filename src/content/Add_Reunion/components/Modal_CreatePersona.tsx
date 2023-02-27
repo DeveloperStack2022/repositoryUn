@@ -1,6 +1,6 @@
-import { FC, useRef} from 'react';
-import {useMutation} from '@apollo/client'
-import {createOnePersonasT,createOnePersonas} from '../graphql'
+import { FC, useRef } from 'react';
+import { useMutation } from '@apollo/client';
+import { createOnePersonasT, createOnePersonas } from '../graphql';
 // Material UI
 import {
   Box,
@@ -13,61 +13,74 @@ import {
   InputLabel,
   Select,
   MenuItem,
-  TextField,
- 
+  TextField
 } from '@mui/material';
 import { useForm, Controller, SubmitHandler } from 'react-hook-form';
 import { z } from 'zod';
 
 const options = [
   {
-    label:"POL",
+    label: 'POL',
     value: 'POL'
   },
   {
-    label:"CBOS",
+    label: 'CBOS',
     value: 'CBOS'
   },
   {
-    label:"CBOP",
+    label: 'CBOP',
     value: 'CBOP'
   },
   {
-    label:"SGOS",
+    label: 'SGOS',
     value: 'SGOS'
   },
   {
-    label:"SGOP",
+    label: 'SGOP',
     value: 'SGOP'
   },
-]
+  {
+    label: 'CPTN',
+    value: 'CPTN'
+  },
+  {
+    label: 'SBOS',
+    value: 'SBOS'
+  },
+  {
+    label: 'SBOP',
+    value: 'SBOP'
+  }
+];
 
 const MenuItemsIterator = () => {
-  return  options.map((elem,index) => {
+  return options.map((elem, index) => {
     return (
-      <MenuItem key={index} value={elem.value}>{elem.label}</MenuItem>
-    )
-  })
-}
+      <MenuItem key={index} value={elem.value}>
+        {elem.label}
+      </MenuItem>
+    );
+  });
+};
 
 const validateSchema = z.object({
   grado_policia: z.string().max(4),
-  nombre:z.string().max(50),
+  nombre: z.string().max(50),
   apellido: z.string().max(50)
-})
+});
 
 type ValidationSchema = z.infer<typeof validateSchema>;
 
 interface IProps {
   open: boolean;
   handleActionsModal: () => void;
-  refetch: () => void
+  refetch: () => void;
 }
 
 const DialogCreatePersona: FC<IProps> = ({ ...props }) => {
-  const { open,handleActionsModal,refetch } = props;
-  const [create] = useMutation<{},createOnePersonasT>(createOnePersonas)
-  //React hooks form 
+  const { open, handleActionsModal, refetch } = props;
+  const [create] = useMutation<{}, createOnePersonasT>(createOnePersonas);
+  //React hooks form
   const {
     handleSubmit,
     formState: { errors },
@@ -79,28 +92,27 @@ const DialogCreatePersona: FC<IProps> = ({ ...props }) => {
   const handleClick = () => {
     elementButton.current.click();
   };
-  
 
-  const handleSubmitForm:SubmitHandler<ValidationSchema> = async (e) => {
+  const handleSubmitForm: SubmitHandler<ValidationSchema> = async (e) => {
     await create({
-      variables:{
-        data:{
-          gradoPolicial:e.grado_policia,
-          nombres:e.nombre,
-          apellidos:e.apellido
+      variables: {
+        data: {
+          gradoPolicial: e.grado_policia,
+          nombres: e.nombre,
+          apellidos: e.apellido
         }
       },
       onCompleted: () => refetch()
-    })
-    
-    reset()
+    });
+
+    reset();
     handleActionsModal();
   };
 
   const handleCancelClick = () => {
-    reset()
-    handleActionsModal()
-  }
+    reset();
+    handleActionsModal();
+  };
 
   return (
     <Dialog
@@ -114,20 +126,19 @@ const DialogCreatePersona: FC<IProps> = ({ ...props }) => {
           <FormControl sx={{ width: '100%', marginBottom: '.5rem' }}>
             <InputLabel>S. Grado</InputLabel>
             <Controller
-              control={control} 
+              control={control}
               name="grado_policia"
-              render={({field}) => (
-                <Select label="Select Grado" {...field} >
+              render={({ field }) => (
+                <Select label="Select Grado" {...field}>
                   {MenuItemsIterator()}
                 </Select>
               )}
             />
-            
           </FormControl>
           <Controller
             control={control}
             name={'nombre'}
-            render={({field}) => (
+            render={({ field }) => (
               <TextField
                 {...field}
                 sx={{ width: '100%', marginBottom: '.5rem' }}
@@ -139,7 +150,7 @@ const DialogCreatePersona: FC<IProps> = ({ ...props }) => {
           <Controller
             control={control}
             name={'apellido'}
-            render={({field}) => (
+            render={({ field }) => (
               <TextField
                 {...field}
                 sx={{ width: '100%', marginBottom: '.5rem' }}
@@ -148,7 +159,7 @@ const DialogCreatePersona: FC<IProps> = ({ ...props }) => {
               />
             )}
           />
-          
+
           <button type="submit" hidden ref={elementButton}></button>
         </Box>
       </DialogContent>

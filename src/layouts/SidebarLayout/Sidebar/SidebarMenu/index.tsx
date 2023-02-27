@@ -1,4 +1,4 @@
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 
 import {
   ListSubheader,
@@ -7,13 +7,20 @@ import {
   List,
   styled,
   Button,
-  ListItem
+  ListItem,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+  Collapse
 } from '@mui/material';
 import { NavLink as RouterLink } from 'react-router-dom';
 import { SidebarContext } from 'src/contexts/SidebarContext';
 
 import DesignServicesTwoToneIcon from '@mui/icons-material/DesignServicesTwoTone';
 // Me Icons
+import ExpandLessIcon from '@mui/icons-material/ExpandLess';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+
 import GroupsTwoToneIcon from '@mui/icons-material/GroupsTwoTone';
 import PersonOutlineTwoToneIcon from '@mui/icons-material/PersonOutlineTwoTone';
 import DescriptionIcon from '@mui/icons-material/Description';
@@ -61,7 +68,6 @@ const MenuWrapper = styled(Box)(
 const SubMenuWrapper = styled(Box)(
   ({ theme }) => `
     .MuiList-root {
-
       .MuiListItem-root {
         padding: 1px 0;
 
@@ -136,7 +142,6 @@ const SubMenuWrapper = styled(Box)(
           .MuiList-root {
             padding: ${theme.spacing(1, 0)};
           }
-
           .MuiListItem-root {
             padding: 1px 0;
 
@@ -181,6 +186,7 @@ const SubMenuWrapper = styled(Box)(
 
 function SidebarMenu() {
   const { closeSidebar } = useContext(SidebarContext);
+  const [Open, setOpen] = useState<boolean>(false);
 
   return (
     <>
@@ -237,13 +243,28 @@ function SidebarMenu() {
               <ListItem component="div">
                 <Button
                   disableRipple
-                  component={RouterLink}
-                  onClick={closeSidebar}
-                  to="/dashboards/cursos"
-                  startIcon={<BookIcon />}
+                  onClick={() => setOpen((prev) => !prev)}
+                  startIcon={<PersonOutlineTwoToneIcon />}
                 >
                   Cursos
                 </Button>
+              </ListItem>
+              <ListItem>
+                <Collapse in={Open} timeout="auto" unmountOnExit>
+                  <List component="div" disablePadding>
+                    <ListItem sx={{ pl: 4 }}>
+                      <Button
+                        disableRipple
+                        component={RouterLink}
+                        onClick={closeSidebar}
+                        to="/dashboards/cursos"
+                        startIcon={<PersonOutlineTwoToneIcon />}
+                      >
+                        Año
+                      </Button>
+                    </ListItem>
+                  </List>
+                </Collapse>
               </ListItem>
               <ListItem component="div">
                 <Button

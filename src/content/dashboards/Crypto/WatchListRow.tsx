@@ -1,5 +1,5 @@
-import {FC} from 'react'
-import {GET_DATA,TemasData} from '../../../types';
+import { FC } from 'react';
+import { GET_DATA, TemasData } from '../../../types';
 
 import {
   Button,
@@ -20,10 +20,10 @@ import Chart from 'react-apexcharts';
 import type { ApexOptions } from 'apexcharts';
 
 const CustomBox = styled(Box)(
-  ({theme}) => `
+  ({ theme }) => `
     padding:1rem;
   `
-)
+);
 
 // const AvatarWrapper = styled(Avatar)(
 //   ({ theme }) => `
@@ -41,7 +41,7 @@ const CustomBox = styled(Box)(
 //         ? theme.colors.alpha.trueWhite[30]
 //         : alpha(theme.colors.alpha.black[100], 0.07)
 //     };
-  
+
 //     img {
 //       background: ${theme.colors.alpha.trueWhite[100]};
 //       padding: ${theme.spacing(0.5)};
@@ -54,76 +54,73 @@ const CustomBox = styled(Box)(
 // );
 
 type PropsComponent = {
-  dataOneUser:GET_DATA,
-  loading:boolean
-}
+  dataOneUser: GET_DATA;
+  loading: boolean;
+};
 
-const WatchListRow:FC<PropsComponent> = ({dataOneUser,loading}) => {
-
+const WatchListRow: FC<PropsComponent> = ({ dataOneUser, loading }) => {
   const theme = useTheme();
 
-  let data:any = []
-  let data_nombres = []
-  if(!loading){
-    const {findManyPersonas} = dataOneUser;
-    findManyPersonas.map(elem => {
-      data_nombres.push(` ${elem.apellidos} ${elem.nombres.charAt(0)}`)
-      return data.push(elem._count.invitaciones)
-    })
+  let data: any = [];
+  let data_nombres = [];
+  if (!loading) {
+    const { findManyPersonas } = dataOneUser;
+    findManyPersonas.map((elem) => {
+      data_nombres.push(` ${elem.apellidos} ${elem.nombres.charAt(0)}`);
+      return data.push(elem._count.invitaciones);
+    });
+    console.log(data_nombres);
+    console.log(data);
   }
-  
 
   const Box1Options: ApexOptions = {
-    
     chart: {
       background: 'transparent',
-      type:"bar",
-      height:350
+      type: 'bar',
+      height: 350
     },
-    colors: [theme.colors.primary.main,"#E91E63","#9C27B0"],
+    colors: [theme.colors.primary.main, '#E91E63', '#9C27B0'],
     theme: {
       mode: theme.palette.mode
     },
-    dataLabels:{
-      enabled:false
+    dataLabels: {
+      enabled: false
     },
     tooltip: {
-    x:{
-      show:true,
-    },
-    y:{
-      formatter: function (val){
-        if(val > 1 ){
-          return `${val} reuniones`
-        }
-        return `${val} reunion`
+      x: {
+        show: true
       },
-      title:{
-        formatter: function (seriesName){
-          return ""
+      y: {
+        formatter: function (val) {
+          if (val > 1) {
+            return `${val} reuniones`;
+          }
+          return `${val} reunion`;
         },
-      },
+        title: {
+          formatter: function (seriesName) {
+            return '';
+          }
+        }
+      }
     },
-  },
-    xaxis:{
-      categories:data_nombres,
+    xaxis: {
+      categories: data_nombres
     },
     stroke: {
       width: 2,
       colors: ['#fff']
     },
-    plotOptions:{
-      bar:{
-        horizontal:true,  
-        borderRadius:4,
-      },
-      
+    plotOptions: {
+      bar: {
+        horizontal: true,
+        borderRadius: 4
+      }
     }
-    
   };
 
   return (
-    <Card sx={{marginTop:2,marginBottom:2}}>
+    <Card sx={{ marginTop: 2, marginBottom: 2 }}>
       {/* {JSON.stringify(data)} */}
       <Stack
         direction="row"
@@ -138,9 +135,8 @@ const WatchListRow:FC<PropsComponent> = ({dataOneUser,loading}) => {
             p: 3
           }}
         >
-         
           <Box
-            sx={{md:{mt:3},sm:{mt:1},xs:{mt:0}}}
+            sx={{ md: { mt: 3 }, sm: { mt: 1 }, xs: { mt: 0 } }}
             display="flex"
             alignItems="center"
             justifyContent="space-between"
@@ -156,33 +152,28 @@ const WatchListRow:FC<PropsComponent> = ({dataOneUser,loading}) => {
                 variant="h2"
                 sx={{
                   pr: 1,
-                  typography:{
-                    sm:'h3',
-                    xs:'h4'
+                  typography: {
+                    sm: 'h3',
+                    xs: 'h4'
                   }
                 }}
               >
                 N. Reuniones
               </Typography>
-              
             </Box>
-            
           </Box>
-          <Box  id="chart">
+          <Box id="chart">
             <Chart
               options={Box1Options}
-              series={[{data:data}]}
+              series={[{ data: data }]}
               type="bar"
               height={350}
             />
           </Box>
         </Box>
-      
       </Stack>
-      
-      
     </Card>
   );
-}
+};
 
 export default WatchListRow;
