@@ -1,12 +1,11 @@
 import {gql} from '@apollo/client'
 
 export const CreatePersonasOnInvitacion = gql`
-mutation CreatePersonasOnInvitacion($personaId: Float!, $invitacionId: Float!) {
-    createPersonasOnInvitacion(personaId: $personaId, invitacionId: $invitacionId) {
-      Personas {
-        gradoPolicial
-        nombres
-        apellidos
+  mutation CreateOnePersonasOnInvitacion($data: PersonasOnInvitacionCreateInput!) {
+    createOnePersonasOnInvitacion(data: $data) {
+      Invitacion {
+        N_Documento
+        F_Recepcion
       }
     }
   }

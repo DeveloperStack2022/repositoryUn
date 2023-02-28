@@ -65,7 +65,7 @@ const AddReunion = () => {
     //
     const handleOpen = () => setOpenModal(prev => !prev)    
     const onSubmitHandler:SubmitHandler<ValidationSchema> = async (value) => {
-        
+        console.log(value)
         const {data:DataResponseCreateCourse} = await createCurso({
             variables:{
                 data:{

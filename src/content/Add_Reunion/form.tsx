@@ -56,7 +56,7 @@ const Tema = z.object({
 })
 
 const validateSchema = z.object({
-  nombrePersona: Persona,
+  nombrePersona: Persona.array(),
   tema: Tema,
   n_documento: z.string(),
   tipo: tipo_reunion,
@@ -151,11 +151,11 @@ const AddReunion = () => {
   }, [LoadingPersonas]);
 
   const onSubmitHandler: SubmitHandler<ValidationSchema> = async (values) => {
-
+    console.log(values)
     const {data:DataResponse} = await createInvitacion({variables:{
       data: {
-        "F_Recepcion": moment(values.fecha_recepcion).format('DD/MM/YYYY'),
-        "fecha_real": moment(values.fecha_asistencia).format('DD/MM/YYYY'),
+        "F_Recepcion": moment.utc(values.fecha_recepcion).toISOString(),
+        "fecha_real": moment.utc(values.fecha_asistencia).toISOString(),
         "N_Documento": values.n_documento,
         "hora": moment(values.hora_asistencia).format('HH:mm'),
         "lugar": values.lugar,
@@ -174,13 +174,30 @@ const AddReunion = () => {
             "id": values.medio_tipo
           }
         },
+      },
+    },onCompleted: async (data) => {
+      for(let i=0; i < values.nombrePersona.length ; i++){
+        await createPersonaOnInvitacion({
+          variables:{
+            data: {
+              Invitacion: {
+                connect: {
+                  id: data.createOneInvitacion.id
+                }
+              },
+              Personas: {
+                connect: {
+                  id: values.nombrePersona[i].value
+                }
+              },
+              "assignedBy": ""
+            }
+          }
+        }) 
+       
       }
+      
     }})
-   
-    createPersonaOnInvitacion({variables:{
-      "personaId": values.nombrePersona.value,
-      "invitacionId": DataResponse.createOneInvitacion.id
-    }}) 
   };
 
   //Actions Modal Dialogs 
@@ -203,12 +220,13 @@ const AddReunion = () => {
           </Typography>
           <LocalizationProvider dateAdapter={AdapterMoment}>
             <Grid container spacing={3} sx={{ my: 2 }}>
-              <Grid item xs={12} sm={6}>
+              <Grid item xs={12} sm={12}>
                 <Controller
                   control={control}
                   name="nombrePersona"
                   render={(props) => (
                     <Autocomplete
+                      multiple  
                       options={DataPersonasState}
                       {...props}
                       renderInput={(params) => (
@@ -229,7 +247,7 @@ const AddReunion = () => {
                   )}
                 />
               </Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid item xs={12} sm={12}>
                 <Controller
                   control={control}
                   name="n_documento"

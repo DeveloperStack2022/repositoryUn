@@ -1,3 +1,4 @@
+import { NavLink as RouterLink } from 'react-router-dom';
 import {
   List,
   ListItem,
@@ -10,9 +11,15 @@ import {
   Button
 } from '@mui/material';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import MenuBookIcon from '@mui/icons-material/MenuBook';
-import Typography from '@mui/material/Typography';
-const ListUsers = () => {
+
+
+interface IProps {
+  data:any[]
+  loading: any
+}
+
+const ListUsers = ({data,loading}:IProps) => {
+  
   return (
     <Card sx={{ height: '237px', mt: 2 }}>
       <div
@@ -33,7 +40,9 @@ const ListUsers = () => {
           }}
         >
           <List disablePadding>
-            <ListItem sx={{ py: 2.7 }}>
+            {!loading && data.map((elem,index) => (
+              <>
+                <ListItem sx={{ py: 2.7 }}>
               <ListItemAvatar>
                 <Avatar>
                   <AccountCircleIcon />
@@ -45,97 +54,18 @@ const ListUsers = () => {
                   noWrap: true,
                   variant: 'subtitle2'
                 }}
-                primary={'SGOP'}
-                secondary={'Ortiz Wilmer'}
+                primary={elem.Personas.gradoPolicial}
+                secondary={`${elem.Personas.nombres} ${elem.Personas.apellidos}`}
               />
-              <Box
-                sx={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  flexDirection: 'column',
-                  justifyContent: 'center',
-                  lineHeight: '0.8',
-                  minWidth: '100px'
-                }}
-              >
-                <Typography color={'blue'}>
-                  <MenuBookIcon />
-                </Typography>
-                <Typography variant="h5">2 cursos</Typography>
-              </Box>
+            
               <Box>
-                <Button size="small">Detalle</Button>
+                <Button size="small" variant="outlined" component={RouterLink} disableRipple  to={`/dashboards/CursosId/${elem.Personas.id}`} >Detalle</Button>
               </Box>
             </ListItem>
             <Divider variant="fullWidth" />
-            <ListItem>
-              <ListItemAvatar>
-                <Avatar>
-                  <AccountCircleIcon />
-                </Avatar>
-              </ListItemAvatar>
-              <ListItemText
-                primaryTypographyProps={{ noWrap: true, variant: 'h5' }}
-                secondaryTypographyProps={{
-                  noWrap: true,
-                  variant: 'subtitle2'
-                }}
-                primary={'Title'}
-                secondary={'text body'}
-              />
-            </ListItem>
-            <Divider variant="fullWidth" />
-            <ListItem>
-              <ListItemAvatar>
-                <Avatar>
-                  <AccountCircleIcon />
-                </Avatar>
-              </ListItemAvatar>
-              <ListItemText
-                primaryTypographyProps={{ noWrap: true, variant: 'h5' }}
-                secondaryTypographyProps={{
-                  noWrap: true,
-                  variant: 'subtitle2'
-                }}
-                primary={'Title'}
-                secondary={'text body'}
-              />
-            </ListItem>
-            <Divider variant="fullWidth" />
-            <ListItem>
-              <ListItemAvatar>
-                <Avatar>
-                  <AccountCircleIcon />
-                </Avatar>
-              </ListItemAvatar>
-              <ListItemText
-                primaryTypographyProps={{ noWrap: true, variant: 'h5' }}
-                secondaryTypographyProps={{
-                  noWrap: true,
-                  variant: 'subtitle2'
-                }}
-                primary={'Title'}
-                secondary={'text body'}
-              />
-            </ListItem>
-            <Divider variant="fullWidth" />
-            <ListItem>
-              <ListItemAvatar>
-                <Avatar>
-                  <AccountCircleIcon />
-                </Avatar>
-              </ListItemAvatar>
-              <ListItemText
-                primaryTypographyProps={{ noWrap: true, variant: 'h5' }}
-                secondaryTypographyProps={{
-                  noWrap: true,
-                  variant: 'subtitle2'
-                }}
-                primary={'Title'}
-                secondary={'text body'}
-              />
-            </ListItem>
-            <Divider />
+              </>
+            ))}
+
           </List>
         </div>
       </div>

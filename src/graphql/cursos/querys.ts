@@ -25,3 +25,45 @@ export const findManyPersonas = gql`
         }
     }
 `
+
+export const  FindManyCursosPersonasWhere = gql`
+    query FindManyCursosPersonas($where: CursosPersonasWhereInput) {
+        findManyCursosPersonas(where: $where) {
+            Cursos {
+            nombre_curso
+            fecha_inicio
+            fecha_final
+            }
+            Personas {
+            gradoPolicial
+            nombres
+            apellidos
+            }
+        }
+    }
+
+`
+export const FindManyPersonasCountRelations  = gql`
+    query FindManyPersonas($where: PersonasWhereInput) {
+        findManyPersonas(where: $where) {
+            _count {
+            invitaciones
+            Felecitaciones
+            Cursos
+            }
+        }
+    }
+`
+
+export const FindManyCursosPersonasFilterFecha = gql`
+    query FindManyCursosPersonas($where: CursosPersonasWhereInput) {
+        findManyCursosPersonas(where: $where) {
+            Personas {
+            gradoPolicial
+            nombres
+            apellidos
+            id
+            }
+        }
+    }
+`

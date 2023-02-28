@@ -38,6 +38,16 @@ const BarrasChartTwo = ({ data_chart, series }: IProps) => {
       labels: {
         style: { colors: 'rgba(0,0,0,0.7)' }
       }
+    },
+    tooltip:{
+      x:{
+        formatter: function(val) {
+          if(val > 1){
+            return `${val} cursos`
+          }
+          return `${val} curso`
+        }
+      }
     }
   };
   return (

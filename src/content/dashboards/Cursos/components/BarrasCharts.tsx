@@ -1,6 +1,6 @@
 import { useRef, useState, useEffect, MouseEvent, useCallback } from 'react';
 import ChartComponent from './BarrasChartTwo';
-import { Card, Box, Button, styled, Menu, MenuItem } from '@mui/material';
+import { Card, Box, Button, styled, Menu, MenuItem,Typography } from '@mui/material';
 import { findManyCursosPersonas } from 'src/graphql/cursos';
 import { useQuery } from '@apollo/client';
 
@@ -58,39 +58,9 @@ const periods = [
   }
 ];
 
-// const serializeData = (data: any[]) => {
-//   // forEach
-
-//   const busqueda = data.reduce((acc, persona, index) => {
-//     //acc => acumulador
-//     //personas => valor Actual del recorrido array
-//     acc[persona.Personas.id] = acc[persona.Personas.id] + 1 || 1;
-//     return acc;
-//   }, {});
-
-//   let datos_ = Object.keys(busqueda);
-//   let valor = Object.values(busqueda);
-//   let objects = {};
-
-//   for (let i = 0; i < datos_.length; i++) {
-//     for (let j = 0; j < data.length; j++) {
-//       if (data[j].Personas.id == datos_[i]) {
-//         objects[
-//           `${data[j].Personas.apellidos.split(' ')[0]} ${data[
-//             j
-//           ].Personas.nombres
-//             .split(' ')[0]
-//             .charAt(0)}`
-//         ] = valor[i];
-//       }
-//     }
-//   }
-
-//   return objects;
-// };
-
 const BarrasCharts = () => {
   const actionRef1 = useRef<any>(null);
+  const [DataPersonas, setDataPersonas] = useState<any[]>([])
   const [DatosChart, setDatosChart] = useState<{}>({});
   const [DataChart, setDataChart] = useState<any[]>([]);
   const [OpenMenu, setOpenMenu] = useState<boolean>(false);
@@ -120,6 +90,7 @@ const BarrasCharts = () => {
     },
     onCompleted: (data) => {
       if (data.findManyCursosPersonas.length > 0) {
+        setDataPersonas(data.findManyCursosPersonas)
         let datos_ = serializeData(data.findManyCursosPersonas);
         if (Object.values(datos_).length > 0) {
           setDatosChart(Object.keys(datos_));
@@ -196,9 +167,10 @@ const BarrasCharts = () => {
   return (
     <>
       <Card
-        sx={{ p: 4, mt: 2, height: { sm: '90vh', xs: '90vh', md: 'auto' } }}
+        sx={{ p: 4, mt: 2, height: { sm: '90vh', xs: '90vh', md: '90vh' } }}
       >
         <Box display={'flex'} justifyContent="space-between">
+          <Typography variant={'h3'} component={'h5'} >Cursos</Typography>
           <Button
             variant="outlined"
             size={'medium'}
@@ -236,7 +208,7 @@ const BarrasCharts = () => {
         </Box>
         <ChartComponent data_chart={DatosChart} series={DataChart} />
       </Card>
-      <ListUsers />
+      <ListUsers data={DataPersonas} loading={LoadingFindManyPersonas} />
     </>
   );
 };

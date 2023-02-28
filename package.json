@@ -22,6 +22,7 @@
     "@mui/x-data-grid-generator": "^5.17.20",
     "@mui/x-data-grid-premium": "^5.17.22",
     "@mui/x-date-pickers": "^5.0.19",
+    "@react-pdf/renderer": "^3.1.6",
     "@reduxjs/toolkit": "^1.9.2",
     "@tanstack/react-table": "^8.7.9",
     "@types/react": "17.0.40",
