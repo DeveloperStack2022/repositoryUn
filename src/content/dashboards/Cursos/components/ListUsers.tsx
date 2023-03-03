@@ -43,11 +43,11 @@ const ListUsers = ({data,loading}:IProps) => {
             {!loading && data.map((elem,index) => (
               <>
                 <ListItem sx={{ py: 2.7 }}>
-              <ListItemAvatar>
-                <Avatar>
-                  <AccountCircleIcon />
-                </Avatar>
-              </ListItemAvatar>
+                  <ListItemAvatar>
+                    <Avatar>
+                      <AccountCircleIcon />
+                    </Avatar>
+                  </ListItemAvatar>
               <ListItemText
                 primaryTypographyProps={{ noWrap: true, variant: 'h5' }}
                 secondaryTypographyProps={{

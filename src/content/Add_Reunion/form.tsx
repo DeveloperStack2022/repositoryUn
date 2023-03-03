@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState,useCallback } from 'react';
 import {
   Button,
   Paper,
@@ -26,6 +26,7 @@ import { Tema_Rutas, findManyPersonas,CreateOneInvitacion,CreatePersonasOnInvita
 import ModalDialog from './components/Modal_CreatePersona';
 import TemaSearchInput from './components/AutoComplete_Temas'
 import ModalDialogTema from './components/ModalCreateTema'
+import ModalDialogMessage from 'src/components/Dialog'
 
 type FormInput = {
   nombrePersona: string;
@@ -39,7 +40,7 @@ const tipo = [
 const medio_tipo = ['PRESENCIAL', 'VIRTUAL'] as const;
 
 const tipo_reunion = z.object({
-  id:z.number(),
+  id:z.number(), 
   tipo_reunion: z.string()
 })
 const medio_ = z.object({
@@ -89,57 +90,28 @@ const AddReunion = () => {
   const [TemaData,setTemaData] = useState<[{id:number,label:string}]>()
   const [OpenModal,setOpenModal] = useState<boolean>(false)
   const [OpenModalCreateTema, setOpenModalCreateTema] = useState<boolean>(false)
+  const [Open, setOpen] = useState<boolean>(false)
+  const [AddTema, setAddTema] = useState<number>(0);
+  const [AddPersona, setAddPersona] = useState<number>(0);
 
   // End States
-  // react-hook-form -----------------------------
+  //TODO: react-hook-form -----------------------------
   const {
     handleSubmit,
     formState: { errors },
-    control
+    control,
+    reset
   } = useForm<ValidationSchema>({ mode: 'all' });
-  //End react-hook-form --------------------------
+  //TODO:End react-hook-form ---------------------
   //Querys - GraphQL -----------------------------
   const {
     data: DataPersonas,
     loading: LoadingPersonas,
     error: ErorrPersonas,
     refetch: refetchPersonas
-  } = useQuery(findManyPersonas);
-  const {
-    data: DataTemasRutas,
-    loading: LoadingTemaRutas,
-    error: ErrorTemasRutas,
-    refetch:refetchTemasRutas
-  } = useQuery(Tema_Rutas);
-  const {data:DataTipoReunion,loading:LoadingTipoReunion} = useQuery<TipoReunionT>(TipoReunion)
-  const {data:DataTipo_RS,loading:LoadingTipo_RS} = useQuery<Tipo_RST>(Tipo_RS)
-  // ---------------------------------------
-
-  //Mutations - GraphQL --------------------
-  const [createInvitacion,{loading:LoadingCreateInvitacion,error}] = useMutation(CreateOneInvitacion)
-  const [createPersonaOnInvitacion,{data:dataCreatePersonaOnInvitacion,loading:loadingCreatePersonaOnInvitacion,error:errorCreatePersonaOnInvitacion}] = useMutation(CreatePersonasOnInvitacion)
-  // ---------------------------------------
- 
-
-  useEffect(() => {
-    if(LoadingTemaRutas == false){
-      const temaRutaSerializada =  DataTemasRutas.tema_Rutas.map(elem => {
-        return {
-          id:elem.id,
-          label:elem.tema_text
-        }
-      })
-      setTemaData(temaRutaSerializada)
-    }
-    return () => {}
-  }, [LoadingTemaRutas])
-  
-  useEffect(() => {
-    
-    if (LoadingPersonas == false) {
-      // Serialize Data
-
-      const datosSerializados = DataPersonas.findManyPersonas.map((elem) => {
+  } = useQuery(findManyPersonas,{
+    onCompleted: (data) => {
+      let datosSerializados = data.findManyPersonas.map((elem) => {
         return {
           label: `${elem.gradoPolicial} ${elem.nombres} ${elem.apellidos}`,
           value: elem.id
@@ -147,12 +119,46 @@ const AddReunion = () => {
       });
       setDataPersonas(datosSerializados);
     }
-    return () => {};
-  }, [LoadingPersonas]);
+  });
+
+  const {
+    data: DataTemasRutas,
+    loading: LoadingTemaRutas,
+    error: ErrorTemasRutas,
+    refetch:refetchTemasRutas
+  } = useQuery(Tema_Rutas,{
+    onCompleted: (data) => {
+      const temaRutaSerializada = data.tema_Rutas.map(elem => {
+        return {
+          id:elem.id,
+          label:elem.tema_text
+        }
+      })
+      setTemaData(temaRutaSerializada)
+    }
+  });
+  const {data:DataTipoReunion,loading:LoadingTipoReunion} = useQuery<TipoReunionT>(TipoReunion)
+  const {data:DataTipo_RS,loading:LoadingTipo_RS} = useQuery<Tipo_RST>(Tipo_RS)
+  // ---------------------------------------
+
+  //Mutations - GraphQL --------------------
+  const [createInvitacion,{loading:LoadingCreateInvitacion,error}] = useMutation(CreateOneInvitacion)
+  const [createPersonaOnInvitacion,{data:dataCreatePersonaOnInvitacion,loading:loadingCreatePersonaOnInvitacion,error:errorCreatePersonaOnInvitacion}] = useMutation(CreatePersonasOnInvitacion)
+  // ---------------------------------------  
+  // useEffect(() => {
+    
+  //   if (LoadingPersonas == false) {
+  //     // Serialize Data
+
+      
+  //   }
+  //   return () => {};
+  // }, [LoadingPersonas]);
+
 
   const onSubmitHandler: SubmitHandler<ValidationSchema> = async (values) => {
-    console.log(values)
-    const {data:DataResponse} = await createInvitacion({variables:{
+    
+    await createInvitacion({variables:{
       data: {
         "F_Recepcion": moment.utc(values.fecha_recepcion).toISOString(),
         "fecha_real": moment.utc(values.fecha_asistencia).toISOString(),
@@ -198,18 +204,42 @@ const AddReunion = () => {
       }
       
     }})
+    setOpen(prev => !prev)
+    reset()
   };
-
+  
   //Actions Modal Dialogs 
   const handleActionsModal = () => setOpenModal(prev => !prev);
-  const handleClickActionModalTema = () => {setOpenModalCreateTema(prev => !prev)}
-  //
+  const handleClickActionModalTema = () => {
+    setOpenModalCreateTema(prev => !prev)
+  }
 
+  const handleCloseMessageDialog = () => {
+    reset()
+    setOpen(prev => !prev);
+  }
+  
+  useEffect(() => {
+    (async () => {
+      await refetchTemasRutas()
+    })()
+  },[AddTema])
+  useEffect(() => {
+    (async () => {
+      await refetchPersonas()
+    })()
+  },[AddPersona])
+  
+  // HANDLE: PARA LA SUMA DE ADD TEMA 
+  const handleAddTema = () => {setAddTema(prev => prev + 1 )}
+  // HANDLE: PARA LA SUMA DE ADD PERSONA
+  const handleAddPersona = () => {setAddPersona(prev => prev + 1 )}
+  
   return (
-    <>
-      <ModalDialog open={OpenModal} handleActionsModal={handleActionsModal} refetch={refetchPersonas} />
-      <ModalDialogTema open={OpenModalCreateTema} handleActionsModal={handleClickActionModalTema} refetch={refetchTemasRutas} />
-
+    <> 
+      <ModalDialog open={OpenModal} handleActionsModal={handleActionsModal}  addPersona={handleAddPersona} />
+      <ModalDialogTema open={OpenModalCreateTema} handleActionsModal={handleClickActionModalTema} addTema={handleAddTema} />
+      <ModalDialogMessage handleClose={handleCloseMessageDialog} open={Open} message="Se guardo correctanente" tipo={"success"}  />
       <form onSubmit={handleSubmit(onSubmitHandler)} autoComplete="off">
         <Paper
           variant="outlined"
@@ -367,6 +397,7 @@ const AddReunion = () => {
                   )}
                 />
               </Grid>
+              {/* TODO: Create un nuevo tema */}
               <Grid item xs={12} sm={12}>
                 <Controller 
                   control={control} 

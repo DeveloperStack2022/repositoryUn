@@ -9,7 +9,7 @@ import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
 import {Paper,Typography,Grid,Autocomplete,TextField,Button,FormControl,InputLabel,Select,MenuItem} from '@mui/material';
 import DialogComponent from 'src/components/Dialog'
-
+import ModalCreatePersona from 'src/content/Add_Reunion/components/Modal_CreatePersona'
 
 const Persona = z.object({
     label:z.string(),
@@ -38,22 +38,18 @@ type DataPersonas =  {label:string,id:number}
 
 
 const AddReunion = () => {
-    //States 
+    //HACK:States 
     const [DataPersonasState,setDataPersonasState] = useState<DataPersonas[]>([])
     const [OpenModal,setOpenModal] = useState<boolean>(false)
+    const [OpenModalCreate,setOpenModalCreate] = useState<boolean>(false)
     const [TypeState,setTypeState] = useState<{type:"success" | "error" | 'wargning',message:string}>({type:"success",message:""})
+    const [AddPersona, setAddPersona] = useState<number>(0)
+
     //
-   
     const {handleSubmit,control,formState:{errors}} = useForm<ValidationSchema>({mode:'all'})
     // GraphQL - Querys 
-    const {data,loading:LoadingQueryPersonas,error} = useQuery<findManyPersonasT>(findManyPersonas)
-    const {data:tipo_curso,loading:loading_tipo_curso} = useQuery<Tipo_RST>(Tipo_RS)
-    // GraphQL - Mutations 
-    const [createCurso] = useMutation<{createOneCursos:{id:number}},CreateOneCursosT>(CreateOneCursos)
-    const [createCursosPersonasRelation] = useMutation<{},CreateOneCursosPersonasVariablesT>(CreateOneCursosPersonas)
-
-    useEffect(() => {
-        if(!LoadingQueryPersonas){
+    const {data,loading:LoadingQueryPersonas,error,refetch:RefetchPersonas} = useQuery<findManyPersonasT>(findManyPersonas,{
+        onCompleted: (data) => {
             const parseData:DataPersonas[] = data.findManyPersonas.map(elem => {
                 return {
                     label:`${elem.gradoPolicial} ${elem.nombres} ${elem.apellidos}`, 
@@ -61,11 +57,24 @@ const AddReunion = () => {
             })
             setDataPersonasState(parseData)
         }
-    },[LoadingQueryPersonas])
-    //
+    })
+    const {data:tipo_curso,loading:loading_tipo_curso} = useQuery<Tipo_RST>(Tipo_RS)
+    // GraphQL - Mutations 
+    const [createCurso] = useMutation<{createOneCursos:{id:number}},CreateOneCursosT>(CreateOneCursos)
+    const [createCursosPersonasRelation] = useMutation<{},CreateOneCursosPersonasVariablesT>(CreateOneCursosPersonas)
+
+    useEffect(() => {
+      (async () => {
+        await RefetchPersonas()
+      })()
+      return () => {}
+    }, [AddPersona])
+    
+    //HANDLE 
+    const handleActionsModal = () => setOpenModalCreate(prev => !prev);
+    const handleAddPersona = () => {setAddPersona(prev => prev + 1 )}
     const handleOpen = () => setOpenModal(prev => !prev)    
     const onSubmitHandler:SubmitHandler<ValidationSchema> = async (value) => {
-        console.log(value)
         const {data:DataResponseCreateCourse} = await createCurso({
             variables:{
                 data:{
@@ -112,6 +121,7 @@ const AddReunion = () => {
 
     return (
         <>
+        <ModalCreatePersona  open={OpenModalCreate} addPersona={handleAddPersona} handleActionsModal={handleActionsModal}  />
         <DialogComponent open={OpenModal} handleClose={handleOpen} tipo={TypeState.type} message={TypeState.message}  />
         <form onSubmit={handleSubmit(onSubmitHandler)}>
             <Paper  variant="outlined" sx={{ my: { xs: 3, md: 6 }, p: { xs: 2, md: 3 } }}>
@@ -134,6 +144,7 @@ const AddReunion = () => {
                                         onChange={(_,data) => props.field.onChange(data)}
                                         noOptionsText={
                                             <Button
+                                            onClick={handleActionsModal}
                                             variant="contained"
                                             size="small"
                                                 sx={{ width: '100%' }}

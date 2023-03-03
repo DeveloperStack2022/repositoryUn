@@ -99,7 +99,7 @@ const DialogStatus: FC<IProps> = ({ ...props }) => {
   return (
     <DialogCustom open={open}>
       <DialogTitleCustom id="Dialog-title" onClose={handleClose}>
-        Modal title
+        <Typography variant="subtitle1">Mensages</Typography>
       </DialogTitleCustom>
       <DialogContentCustom>
         {tipo == 'success' ? (

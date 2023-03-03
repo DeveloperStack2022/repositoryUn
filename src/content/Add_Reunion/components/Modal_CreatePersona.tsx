@@ -40,8 +40,16 @@ const options = [
     value: 'SGOP'
   },
   {
+    label:'TNTE',
+    value:'TNTE'
+  },
+  {
     label: 'CPTN',
     value: 'CPTN'
+  },
+  {
+    label:'MAYR',
+    value:'MAYR'
   },
   {
     label: 'SBOS',
@@ -74,11 +82,11 @@ type ValidationSchema = z.infer<typeof validateSchema>;
 interface IProps {
   open: boolean;
   handleActionsModal: () => void;
-  refetch: () => void;
+  addPersona: () => void
 }
 
 const DialogCreatePersona: FC<IProps> = ({ ...props }) => {
-  const { open, handleActionsModal, refetch } = props;
+  const { open, handleActionsModal,addPersona } = props;
   const [create] = useMutation<{}, createOnePersonasT>(createOnePersonas);
   //React hooks form
   const {
@@ -101,10 +109,9 @@ const DialogCreatePersona: FC<IProps> = ({ ...props }) => {
           nombres: e.nombre,
           apellidos: e.apellido
         }
-      },
-      onCompleted: () => refetch()
+      }
     });
-
+    addPersona()
     reset();
     handleActionsModal();
   };

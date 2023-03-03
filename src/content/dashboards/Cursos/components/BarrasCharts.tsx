@@ -1,12 +1,13 @@
 import { useRef, useState, useEffect, MouseEvent, useCallback } from 'react';
 import ChartComponent from './BarrasChartTwo';
 import { Card, Box, Button, styled, Menu, MenuItem,Typography } from '@mui/material';
-import { findManyCursosPersonas } from 'src/graphql/cursos';
+import { findManyCursosPersonas,findManyPersonas } from 'src/graphql/cursos';
 import { useQuery } from '@apollo/client';
 
 //Custom components
 import ExpandMoreTwoTone from '@mui/icons-material/ExpandMoreTwoTone';
 import ListUsers from './ListUsers';
+import ButtonDownload from './ButtonDownloadPDF';
 // var randomColor = Math.floor(Math.random() * 16777215).toString(16);
 
 const DotPrimaryLight = styled('span')(
@@ -69,10 +70,10 @@ const BarrasCharts = () => {
     value_inicial: string;
     value_final: string;
   }>(periods[0]);
+  const [DataArray, setDataArray] = useState<any[]>([])
 
   //Querys
   const {
-    data: DataFindManyPersonas,
     loading: LoadingFindManyPersonas,
     refetch
   } = useQuery(findManyCursosPersonas, {
@@ -92,6 +93,7 @@ const BarrasCharts = () => {
       if (data.findManyCursosPersonas.length > 0) {
         setDataPersonas(data.findManyCursosPersonas)
         let datos_ = serializeData(data.findManyCursosPersonas);
+        serializeToPDF(data.findManyCursosPersonas)
         if (Object.values(datos_).length > 0) {
           setDatosChart(Object.keys(datos_));
           setDataChart(Object.values(datos_));
@@ -102,6 +104,26 @@ const BarrasCharts = () => {
       }
     }
   });
+
+  useQuery(findManyPersonas,{
+    variables:{
+      "where": {
+        "Cursos": {
+          "is": {
+            "fecha_inicio": {
+              "lte":"2023-12-31T24:00:00.000Z",
+              "gte":"2023-01-01T00:00:00.000Z"
+            }
+          }
+        }
+      }
+    },
+    onCompleted: (data) => {
+      let dataS = serializeToPDF(data.findManyPersonas)
+      dataS = dataS.filter(e => e != null)
+      setDataArray(dataS)
+    }
+  })
 
   //CallBack
   const serializeData = useCallback(
@@ -138,6 +160,31 @@ const BarrasCharts = () => {
     [period]
   );
 
+  const serializeToPDF = useCallback(
+    (data) => {
+      return data.map(elem => {
+        if(elem.Cursos.length > 0 ){
+          let cursos = elem.Cursos.map(ite =>{
+            return {
+              nombre_curso: ite.Cursos.nombre_curso,
+              lugar: ite.Cursos.lugar,
+              fecha_i : ite.Cursos.fecha_inicio,
+              fecha_f: ite.Cursos.fecha_final,
+              tipo: ite.Cursos.tipo
+            }
+          })
+          return {
+            grado: elem.gradoPolicial,
+            nombres:elem.nombres,
+            apellidos: elem.apellidos,
+            cursos:cursos
+          }
+        }
+        return null
+      })
+    },[])
+  
+
   useEffect(() => {
     (async () => {
       await refetch({
@@ -171,6 +218,7 @@ const BarrasCharts = () => {
       >
         <Box display={'flex'} justifyContent="space-between">
           <Typography variant={'h3'} component={'h5'} >Cursos</Typography>
+          <Box>
           <Button
             variant="outlined"
             size={'medium'}
@@ -180,6 +228,7 @@ const BarrasCharts = () => {
           >
             {period.text}
           </Button>
+
           <Menu
             disableScrollLock
             anchorEl={actionRef1.current}
@@ -205,6 +254,8 @@ const BarrasCharts = () => {
               </MenuItem>
             ))}
           </Menu>
+          <ButtonDownload  data={DataArray} />
+          </Box>
         </Box>
         <ChartComponent data_chart={DatosChart} series={DataChart} />
       </Card>

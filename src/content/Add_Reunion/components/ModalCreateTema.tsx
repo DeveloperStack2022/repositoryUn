@@ -24,13 +24,13 @@ type ValidationSchema = z.infer<typeof validateSchema>;
 interface IProps {
   open: boolean;
   handleActionsModal: () => void;
-  refetch: () => void
+  addTema: () => void
 }
 
 const DialogCreatePersona: FC<IProps> = ({ ...props }) => {
-  const { open,handleActionsModal,refetch } = props;
+  const { open,handleActionsModal,addTema } = props;
   const [createOneTema,{}] = useMutation<{},createOneTema_RutaT>(createOneTema_Ruta)
-  //React hooks form 
+  //TODO: React hooks Form.
   const {
     handleSubmit,
     formState: { errors },
@@ -43,7 +43,7 @@ const DialogCreatePersona: FC<IProps> = ({ ...props }) => {
     elementButton.current.click();
   };
   
-
+  //HANDLE: SUBMIT FORM
   const handleSubmitForm:SubmitHandler<ValidationSchema> = async (e) => {
     await createOneTema({
       variables:{
@@ -52,7 +52,7 @@ const DialogCreatePersona: FC<IProps> = ({ ...props }) => {
         }
       }
     })
-    refetch()
+    addTema()
     reset()
     handleActionsModal();
   };

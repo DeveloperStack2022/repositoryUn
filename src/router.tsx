@@ -27,8 +27,8 @@ const TablePersonasInformation = Loader(
 const Cursos = Loader(lazy(() => import('src/content/dashboards/Cursos')));
 const AgregarReunion = Loader(lazy(() => import('src/content/Add_Reunion')));
 const AgregarCursos = Loader(lazy(() => import('src/content/Add_Cursos')));
-
-
+const PageTemas = Loader(lazy(() => import('src/content/Tema')))
+const AgregarFelicitaciones = Loader(lazy(() => import('src/content/Add_Felicitaciones')))
 //
 const ByUser = Loader(lazy(() => import('src/content/dashboards/ByUser')));
 const ByReuniones = Loader(lazy(() => import('src/content/dashboards/ByReuniones')))
@@ -153,6 +153,11 @@ const routes: RouteObject[] = [
 
       },
       {
+        path: 'Temas',
+        element: <PageTemas />,
+
+      },
+      {
         path: 'CursosId/:id',
         element: <ByUser />
       },
@@ -167,6 +172,10 @@ const routes: RouteObject[] = [
       {
         path: 'AgregarCursos',
         element: <AgregarCursos />
+      },
+      {
+        path: 'AgregarFelicitaciones',
+        element: <AgregarFelicitaciones />
       },
       {
         path: 'messenger',

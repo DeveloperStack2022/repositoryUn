@@ -58,7 +58,7 @@ import {
             <Divider flexItem orientation="vertical" />
             <Box sx={{ p: 2 }}>
               <Typography variant="h3" align="center" gutterBottom>
-                {data.length}
+                {data_count[0]._count.Cursos}
               </Typography>
               <Typography variant="subtitle2" align="center">
                 Cursos

@@ -9,6 +9,13 @@ export const findManyCursosPersonas = gql`
                 apellidos
                 id
             }
+            Cursos {
+                nombre_curso
+                lugar
+                fecha_inicio
+                fecha_final
+                tipo
+          }
         }
     }
 `
@@ -19,6 +26,15 @@ export const findManyPersonas = gql`
             gradoPolicial
             nombres
             apellidos
+            Cursos {
+                Cursos {
+                    nombre_curso
+                    lugar
+                    fecha_inicio
+                    fecha_final
+                    tipo
+                }
+            }
             _count {
                 Cursos
             }
@@ -30,14 +46,14 @@ export const  FindManyCursosPersonasWhere = gql`
     query FindManyCursosPersonas($where: CursosPersonasWhereInput) {
         findManyCursosPersonas(where: $where) {
             Cursos {
-            nombre_curso
-            fecha_inicio
-            fecha_final
+                nombre_curso
+                fecha_inicio
+                fecha_final
             }
             Personas {
-            gradoPolicial
-            nombres
-            apellidos
+                gradoPolicial
+                nombres
+                apellidos
             }
         }
     }

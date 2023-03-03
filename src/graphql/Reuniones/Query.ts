@@ -21,7 +21,8 @@ export const CountReunionesQuery = gql`
             nombres
             apellidos
             _count {
-            invitaciones
+                invitaciones
+                
             }
         }
     }

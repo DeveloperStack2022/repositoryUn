@@ -1,4 +1,5 @@
-import { ApexOptions } from 'apexcharts';
+import {useEffect} from 'react'
+import ApexCharts,{ApexOptions} from 'apexcharts'
 import Chart from 'react-apexcharts';
 interface IProps {
   data_chart: {};
@@ -7,6 +8,7 @@ interface IProps {
 const BarrasChartTwo = ({ data_chart, series }: IProps) => {
   const Options: ApexOptions = {
     chart: {
+      id:'id_barras',
       background: 'transparent',
       toolbar: { show: false },
       type: 'bar',
@@ -36,22 +38,34 @@ const BarrasChartTwo = ({ data_chart, series }: IProps) => {
     },
     yaxis: {
       labels: {
-        style: { colors: 'rgba(0,0,0,0.7)' }
-      }
+        style: { 
+          colors: 'rgba(0,0,0,0.7)',
+          fontWeight: '700'
+        },
+      },
     },
     tooltip:{
       x:{
+        show:true
+      },
+      y:{
         formatter: function(val) {
           if(val > 1){
             return `${val} cursos`
           }
           return `${val} curso`
+        },
+        title: {
+          formatter: function (seriesName) {
+            return ''
+          },
         }
       }
     }
   };
   return (
     <Chart
+      id="id_barras"
       options={Options}
       type={Options.chart.type}
       series={[{ data: series }]}

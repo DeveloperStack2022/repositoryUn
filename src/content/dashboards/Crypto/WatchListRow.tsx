@@ -44,7 +44,32 @@ const WatchListRow: FC<PropsComponent> = ({ dataOneUser, loading,data_chart,seri
       enabled: false
     },
     fill:{opacity:1},
+    grid:{borderColor:'rgba(0,0,0,0.112)', strokeDashArray: 6  },
     legend:{show:false},
+    plotOptions: {
+      bar: {
+        horizontal: true,
+        borderRadius: 4,
+        barHeight:'30px'
+      }
+    },
+    stroke: {
+      width: 2,
+      colors: ['transparent'],
+      show: true
+    },
+    xaxis: {
+      axisBorder: {show:false},
+      axisTicks:{show:true},
+      categories: data_chart
+    },
+    yaxis:{
+      labels:{
+        style:{
+          colors:'rgba(0,0,0,0.7)'
+        }
+      }
+    },
     tooltip: {
       x: {
         show: true
@@ -63,19 +88,6 @@ const WatchListRow: FC<PropsComponent> = ({ dataOneUser, loading,data_chart,seri
         }
       }
     },
-    xaxis: {
-      categories: data_chart
-    },
-    stroke: {
-      width: 2,
-      colors: ['#fff']
-    },
-    plotOptions: {
-      bar: {
-        horizontal: true,
-        borderRadius: 4
-      }
-    }
   };
 
   return (
