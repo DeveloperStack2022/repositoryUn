@@ -39,14 +39,16 @@ type DataPersonas =  {label:string,id:number}
 
 const AddReunion = () => {
     //HACK:States 
+    const [PersonasCurso, setPersonasCurso] = useState<{label:string,id:number}>({label:'',id:0})
+    const [TipoAsistencia, setTipoAsistencia] = useState<{value:number,children:string}>({value:0,children:''})
     const [DataPersonasState,setDataPersonasState] = useState<DataPersonas[]>([])
     const [OpenModal,setOpenModal] = useState<boolean>(false)
     const [OpenModalCreate,setOpenModalCreate] = useState<boolean>(false)
     const [TypeState,setTypeState] = useState<{type:"success" | "error" | 'wargning',message:string}>({type:"success",message:""})
     const [AddPersona, setAddPersona] = useState<number>(0)
 
-    //
-    const {handleSubmit,control,formState:{errors}} = useForm<ValidationSchema>({mode:'all'})
+    //HANDLE: REACT HOOKS FORM
+    const {handleSubmit,control,formState:{errors},reset} = useForm<ValidationSchema>({mode:'all'})
     // GraphQL - Querys 
     const {data,loading:LoadingQueryPersonas,error,refetch:RefetchPersonas} = useQuery<findManyPersonasT>(findManyPersonas,{
         onCompleted: (data) => {
@@ -75,6 +77,7 @@ const AddReunion = () => {
     const handleAddPersona = () => {setAddPersona(prev => prev + 1 )}
     const handleOpen = () => setOpenModal(prev => !prev)    
     const onSubmitHandler:SubmitHandler<ValidationSchema> = async (value) => {
+        console.log(value)
         const {data:DataResponseCreateCourse} = await createCurso({
             variables:{
                 data:{
@@ -117,6 +120,19 @@ const AddReunion = () => {
             message: "Se guardo con exito"
         })
         handleOpen()
+        setTipoAsistencia({value:0,children:''})
+        setPersonasCurso({label:'',id:0})
+        reset({
+            persona:{
+                id:0,
+                label:''
+            },
+            lugar:'',
+            fecha_final:new Date(),
+            fecha_inicio: new Date(),
+            nombre_curso:'',
+            tipo_curso:0
+        })
     }   
 
     return (
@@ -136,12 +152,16 @@ const AddReunion = () => {
                                 name="persona"
                                 render={(props) => (
                                     <Autocomplete
-                                    options={DataPersonasState.length > 0 ? DataPersonasState : []}
-                                    {...props}
-                                    renderInput={(params) => (
-                                            <TextField {...params} label={'Nombre Policia'} />
-                                            )}
-                                        onChange={(_,data) => props.field.onChange(data)}
+                                        options={DataPersonasState.length > 0 ? DataPersonasState : []}
+                                        {...props}
+                                        renderInput={(params) => (
+                                                <TextField {...params} label={'Nombre Policia'} />
+                                                )}
+                                        onChange={(_,data) => {
+                                            setPersonasCurso({label:data.label,id: data.id})
+                                            props.field.onChange(data)
+                                        }}
+                                        inputValue={PersonasCurso.label}
                                         noOptionsText={
                                             <Button
                                             onClick={handleActionsModal}
@@ -178,13 +198,13 @@ const AddReunion = () => {
                                     <FormControl fullWidth>
                                         <InputLabel  id="seleccion">Asistencia</InputLabel>
                                         <Select
-                                            {...props}
                                             label="Asistencia"
                                             sx={{ width: '100%' }}
-                                            defaultValue={'Tipo Reunion'}
-                                            onChange={(_,data:{props:{value:number}}) => {
-                                            props.field.onChange(data.props.value)
-                                        }}
+                                            value={TipoAsistencia.value}
+                                            onChange={(_,data:{props:{value:number,children:string}}) => {
+                                                setTipoAsistencia({children: data.props.children,value:data.props.value})
+                                                props.field.onChange(data.props.value)
+                                            }}
                                         >
                                             {!loading_tipo_curso && tipo_curso.tipo_RS.map(elem => <MenuItem key={elem.id} value={elem.id}>{elem.tipo_reunion}</MenuItem>)}
                                         </Select>
@@ -236,7 +256,7 @@ const AddReunion = () => {
                                         )}
                                         />
                                         )}
-                                        />
+                                        />  
                         </Grid>
                     </Grid>
                     <Button type={'submit'} variant={'contained'}>Agregar</Button>

@@ -107,7 +107,6 @@ const FormFelicitaciones = () => {
             },
             tipo:''
         });
-
     }
 
     return(
