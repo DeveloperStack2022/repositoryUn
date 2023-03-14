@@ -20,6 +20,9 @@ import DesignServicesTwoToneIcon from '@mui/icons-material/DesignServicesTwoTone
 // Me Icons
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import StarsIcon from '@mui/icons-material/Stars';
+import MenuBookIcon from '@mui/icons-material/MenuBook';
+import LibraryBooksIcon from '@mui/icons-material/LibraryBooks';
 
 import GroupsTwoToneIcon from '@mui/icons-material/GroupsTwoTone';
 import PersonOutlineTwoToneIcon from '@mui/icons-material/PersonOutlineTwoTone';
@@ -234,6 +237,17 @@ function SidebarMenu() {
                   disableRipple
                   component={RouterLink}
                   onClick={closeSidebar}
+                  to="/dashboards/Felicitaciones"
+                  startIcon={<StarsIcon />}
+                >
+                  Felicitaciones
+                </Button>
+              </ListItem>
+              <ListItem component="div">
+                <Button
+                  disableRipple
+                  component={RouterLink}
+                  onClick={closeSidebar}
                   to="/dashboards/personas"
                   startIcon={<PersonOutlineTwoToneIcon />}
                 >
@@ -244,7 +258,7 @@ function SidebarMenu() {
                 <Button
                   disableRipple
                   onClick={() => setOpen((prev) => !prev)}
-                  startIcon={<PersonOutlineTwoToneIcon />}
+                  startIcon={<MenuBookIcon />}
                 >
                   Cursos
                 </Button>
@@ -258,7 +272,7 @@ function SidebarMenu() {
                         component={RouterLink}
                         onClick={closeSidebar}
                         to="/dashboards/cursos"
-                        startIcon={<PersonOutlineTwoToneIcon />}
+                        startIcon={<LibraryBooksIcon />}
                       >
                         Año
                       </Button>

@@ -25,6 +25,7 @@ const TablePersonasInformation = Loader(
   lazy(() => import('src/content/dashboards/personas_reuniones'))
 );
 const Cursos = Loader(lazy(() => import('src/content/dashboards/Cursos')));
+const FelicitacionesDashboard = Loader(lazy(() => import('src/content/dashboards/felicitaciones')))
 const AgregarReunion = Loader(lazy(() => import('src/content/Add_Reunion')));
 const AgregarCursos = Loader(lazy(() => import('src/content/Add_Cursos')));
 const PageTemas = Loader(lazy(() => import('src/content/Tema')))
@@ -151,6 +152,9 @@ const routes: RouteObject[] = [
         path: 'Cursos',
         element: <Cursos />,
 
+      },{
+        path:'Felicitaciones',
+        element: <FelicitacionesDashboard />
       },
       {
         path: 'Temas',

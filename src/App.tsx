@@ -8,15 +8,13 @@ import {
 import { useRoutes } from 'react-router-dom';
 import router from 'src/router';
 
-import AdapterDateFns from '@mui/lab/AdapterDateFns';
-
 import { CssBaseline } from '@mui/material';
 import ThemeProvider from './theme/ThemeProvider';
 
 function App() {
   const content = useRoutes(router);
   const client = new ApolloClient({
-    uri: 'http://192.168.20.124:8000/graphql',
+    uri: 'http://localhost:8000/graphql',
     cache: new InMemoryCache()
   });
   return (

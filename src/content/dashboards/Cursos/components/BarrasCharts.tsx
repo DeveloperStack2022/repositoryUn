@@ -90,6 +90,7 @@ const BarrasCharts = () => {
       }
     },
     onCompleted: (data) => {
+      console.log(data)
       if (data.findManyCursosPersonas.length > 0) {
         setDataPersonas(data.findManyCursosPersonas)
         let datos_ = serializeData(data.findManyCursosPersonas);
