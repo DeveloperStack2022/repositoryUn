@@ -1,4 +1,4 @@
-import {useEffect,useState} from 'react'
+import {useEffect,useState,useRef} from 'react'
 import {
     Button,
     Paper,
@@ -42,6 +42,7 @@ type ValidationSchema = z.infer<typeof validateSchema>
 
 //TODO: COMPONENT - FELICIATACIONES
 const FormFelicitaciones = () => {
+    const fieldRef = useRef(null)
 
     //TODO: STATES
     const [OpenCreatePersona, setOpenCreatePersona] = useState<boolean>(false);
@@ -49,6 +50,7 @@ const FormFelicitaciones = () => {
     const [DataPersonas, setDataPersonas] = useState<any[]>([]) 
     const [OpenModalMessage,setOpenModalMessage] = useState<{tipo:"success" | 'wargning' | 'error',message:string}>({tipo:'success',message:''})
     const [ModalDialogMessageActions,setModalDialogMessageActions] = useState<boolean>(false)
+    const [Value, setValue] = useState<string>("")
     //TODO: REACT HOOKS FORM   
     const {handleSubmit,formState:{errors},control,reset} = useForm<ValidationSchema>({mode:'all'});
  
@@ -98,6 +100,7 @@ const FormFelicitaciones = () => {
 
     const handleCloseModalDialogMessage = () => {
         setModalDialogMessageActions(prev => !prev);
+        fieldRef.current.value = null
         reset({
             causa:'',
             fecha_felicitacion: new Date(),
@@ -124,12 +127,17 @@ const FormFelicitaciones = () => {
                                 name="nombrePersona"
                                 render={(props) => (
                                     <Autocomplete
-                                        onChange={(_,data) => props.field.onChange(data)}
+                                        
+                                        onChange={(_,data) => {
+                                            console.log(data)
+                                            // setValue()
+                                            props.field.onChange(data)
+                                        }}
                                         options={DataPersonas} 
                                         value={props.field.value}
                                         {...props}
                                         renderInput={ (params) => (
-                                            <TextField   {...params} label={'Nombre Policia'} />
+                                            <TextField  value={params.inputProps.value}  {...params} label={'Nombre Policia'} />
                                             )}
                                             noOptionsText={
                                                 <Button 

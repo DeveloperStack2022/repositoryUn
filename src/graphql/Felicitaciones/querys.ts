@@ -12,3 +12,38 @@ query Personas($where: FelecitacionesWhereInput) {
     }
   }
 `
+
+export const PersonasFelicitaciones = gql`
+  query _count{
+    findManyPersonas {
+      gradoPolicial
+      nombres
+      apellidos
+      Felecitaciones {
+        tipo
+        causa
+        fecha
+      }
+      _count {
+        Felecitaciones
+      }
+    }
+  }
+`
+
+export const PersonasF = gql`
+  query FindManyPersonas($where: FelecitacionesWhereInput) {
+    findManyPersonas {
+      id
+      gradoPolicial
+      nombres
+      apellidos
+      _count {
+        Felecitaciones
+      }
+      Felecitaciones(where: $where) {
+        id
+      }
+    }
+  }
+`

@@ -3,10 +3,10 @@ import {Card,Box,Typography,Button,Menu, MenuItem} from '@mui/material'
 import ExpandMoreTwoTone from '@mui/icons-material/ExpandMoreTwoTone';
 // TODO: Custom Components 
 import Bar from './BarChart'
-
+import ListUsers from './ListOptions'
 //TODO: Graphql Import 
 import {useQuery} from '@apollo/client'
-import {getFelicitacionesForDates} from 'src/graphql/Felicitaciones'
+import {getFelicitacionesForDates,PersonasFelicitaciones,PersonasF} from 'src/graphql/Felicitaciones'
 
 // Periods Menu 
 const periods = [
@@ -44,8 +44,9 @@ const Felicitaciones = () => {
     const [DataPersonas, setDataPersonas] = useState<any[]>([])
     const [DatosChart, setDatosChart] = useState<{}>({});
     const [DataChart, setDataChart] = useState<any[]>([]);
+    const [DataList, setDataList] = useState<any[]>([])
     // TODO: Hooks Apollo Client ---- Querys ----
-    const {refetch: refetchQueryPersonasFeliciationes} = useQuery(getFelicitacionesForDates,{
+    const {refetch: refetchQueryPersonasFeliciationes,loading: LoadingGetFelicitaciones} = useQuery(getFelicitacionesForDates,{
         variables:{
             where:{
                 fecha:{
@@ -56,11 +57,10 @@ const Felicitaciones = () => {
         },
         onCompleted: (data) => {
             if(data.findManyFelecitaciones.length > 0){
-                console.log(data)
                 setDataPersonas(data.findManyFelecitaciones)
                 let datos_ = serializeData(data.findManyFelecitaciones)
                 console.info(datos_)
-                debugger
+                
                 if(Object.values(datos_).length > 0){
                     setDatosChart(Object.keys(datos_))
                     setDataChart(Object.values(datos_))
@@ -72,6 +72,22 @@ const Felicitaciones = () => {
             
         }
     })
+    const {refetch: RefetchQueryPersonasF,loading: LoadingQueryPersonasF} = useQuery(PersonasF,{
+        variables:{
+            "where": {
+                "fecha": {
+                  "lte": "2023-12-31T24:00:00.000Z",
+                  "gte": "2023-01-01T00:00:00.000Z"
+                }
+            }
+        },
+        onCompleted: (data) => {
+            if(data.findManyPersonas.length > 0 ){
+                let datos_lista = serializeDataList(data.findManyPersonas)
+                setDataList(datos_lista)
+            }
+        }
+    })
 
     //
     const handleClickMenuItem = (event:MouseEvent<HTMLElement>,index:number) => {
@@ -79,14 +95,31 @@ const Felicitaciones = () => {
         setOpenMenu(false)
     }
 
+    const serializeDataList = useCallback(
+      (data) => {
+        
+        let valores = []
+        data.map(e => {
+           if( e.Felecitaciones.length > 0){
+            valores.push({
+                id:e.id,
+                gradoPolicial: e.gradoPolicial,
+                nombres:`${e.nombres} ${e.apellidos}`
+            })
+           }
+        })
+        return valores
+      },[PeriodOptions])
+    
+
     //
     const serializeData = useCallback((data) => {
-        console.log("data")
+        
         const busqueda = data.reduce((acc,persona,index) => {
             acc[persona.personas.id] = acc[persona.personas.id] + 1 || 1;
             return acc;
         },{});
-        console.log(busqueda)
+       
         let datos_ = Object.keys(busqueda)
         let valor = Object.values(busqueda);
         let objects = {};
@@ -114,9 +147,25 @@ const Felicitaciones = () => {
         })()
       return () => {}
     }, [PeriodOptions])
+
+    useEffect(() => {
+        (async() => {
+            await RefetchQueryPersonasF({
+                where:{
+                    fecha:{
+                        gte:PeriodOptions.value_inicial,
+                        lte:PeriodOptions.value_final
+                    }
+                }
+            })
+        })()
+      return () => {}
+    }, [PeriodOptions])
+    
     
 
     return (
+        <>
         <Card sx={{ p: 4, mt: 2, height: { sm: '90vh', xs: '90vh', md: '90vh' } }}>
             <Box display={'flex'} justifyContent="space-between">
                 <Typography variant={'h3'} component={'h5'} >Felicitaciones</Typography>
@@ -151,6 +200,8 @@ const Felicitaciones = () => {
             </Box>
             <Bar data_chars={DatosChart} series={DataChart} />
         </Card>
+        <ListUsers data={DataList} loading={LoadingQueryPersonasF} />
+    </>
     )
 }
 

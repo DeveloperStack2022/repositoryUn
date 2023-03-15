@@ -34,9 +34,11 @@ const BarChartComponent = ({data_chars,series}:IProps) => {
             width:3
         },
         xaxis:{
+            type:'category',
             axisBorder:{show:false},
             axisTicks:{show:true},
-            categories:data_chars
+            categories:data_chars,
+            floating:false,
         },
         yaxis:{
             labels:{
