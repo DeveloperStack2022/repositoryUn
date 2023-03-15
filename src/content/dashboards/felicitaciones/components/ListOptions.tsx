@@ -1,6 +1,7 @@
 import {useState} from 'react'
-import {Card,List,ListItem,ListItemAvatar,Avatar,ListItemText,Divider} from '@mui/material'
+import {Card,List,ListItem,ListItemAvatar,Avatar,ListItemText,Divider,Box,Button} from '@mui/material'
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import { NavLink as RouterLink } from 'react-router-dom';
 
 interface IProps {
     data:any[],
@@ -35,6 +36,9 @@ const ListOptionsCards  = ({data,loading}:IProps) => {
                                     </Avatar>
                                 </ListItemAvatar>
                                 <ListItemText primaryTypographyProps={{noWrap:true,variant:'h5'}} secondaryTypographyProps={{noWrap:true,variant:'subtitle2'}} primary={elem.gradoPolicial} secondary={`${elem.nombres}`} />
+                                <Box>
+                                    <Button size="small" variant="outlined" component={RouterLink} disableRipple  to={`/dashboards/felicitaciones/${elem.id}`} >Detalle</Button>
+                                </Box>
                             </ListItem>
                             <Divider variant="fullWidth" />
                             </>

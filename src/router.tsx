@@ -33,6 +33,7 @@ const AgregarFelicitaciones = Loader(lazy(() => import('src/content/Add_Felicita
 //
 const ByUser = Loader(lazy(() => import('src/content/dashboards/ByUser')));
 const ByReuniones = Loader(lazy(() => import('src/content/dashboards/ByReuniones')))
+const ByFelicitaciones = Loader(lazy(() => import('src/content/dashboards/ByFelicitaciones')))
 
 // Applications
 
@@ -168,6 +169,10 @@ const routes: RouteObject[] = [
       {
         path: 'Reuniones/:id',
         element: <ByReuniones />
+      },
+      {
+        path: 'felicitaciones/:id',
+        element: <ByFelicitaciones />
       },
       {
         path: 'AgregarReunion',
