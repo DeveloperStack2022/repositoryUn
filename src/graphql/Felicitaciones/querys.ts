@@ -1,5 +1,17 @@
 import {gql} from '@apollo/client'
 
+
+export const FelicitacionesManyForId = gql`
+query FindManyFelecitaciones($where: FelecitacionesWhereInput) {
+  findManyFelecitaciones(where: $where) {
+    id
+    causa
+    tipo
+    fecha
+  }
+}
+`
+
 export const getFelicitacionesForDates = gql`
 query Personas($where: FelecitacionesWhereInput) {
     findManyFelecitaciones(where: $where) {

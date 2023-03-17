@@ -63,10 +63,14 @@ export const FindManyPersonasCountRelations  = gql`
     query FindManyPersonas($where: PersonasWhereInput) {
         findManyPersonas(where: $where) {
             _count {
-            invitaciones
-            Felecitaciones
-            Cursos
+                invitaciones
+                Felecitaciones
+                Cursos
             }
+            id
+            gradoPolicial
+            nombres
+            apellidos
         }
     }
 `

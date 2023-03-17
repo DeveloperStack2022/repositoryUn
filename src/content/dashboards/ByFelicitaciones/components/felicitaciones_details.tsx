@@ -33,9 +33,9 @@ import {
               ></Avatar>
             <Box>
               <Typography variant="h4" sx={{ fontSize: '1.125rem' }}>
-              {data[0].Personas.gradoPolicial}
+              {data_count[0].gradoPolicial}
               </Typography>
-              <Typography variant="subtitle2">{data[0].Personas.nombres} {data[0].Personas.apellidos}</Typography>
+              <Typography variant="subtitle2">{data_count[0].nombres} {data_count[0].apellidos}</Typography>
             </Box>
           </Box>
           <Box
@@ -80,17 +80,17 @@ import {
               <ListItem key={index}>
                 <ListItemText
                 primaryTypographyProps={{ variant: 'h5' }}
-                primary={elem.Invitacion.TipoReunion.tipo_reunion}
+                primary={elem.tipo}
                 secondaryTypographyProps={{ noWrap: false, variant: 'subtitle2' }}
                 secondary={
                   <Box sx={{ mt: 0.5 }}>
                     <Typography>
-                      {elem.Invitacion.tema_ruta.tema_text}
+                      {elem.causa}
                     </Typography>
                     <Chip
                       size={'small'}  
                       sx={{ mr: { xs: 1, md: 1 }, mb: { xs: 0, md: 0 } }}
-                      label={moment(elem.Invitacion.fecha_real).format('DD/MM/YYYY')}
+                      label={moment(elem.fecha).format('DD/MM/YYYY')}
                       color="primary"
                     />
                     

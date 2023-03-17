@@ -3,14 +3,15 @@ import {useParams} from 'react-router-dom'
 import {useEffect} from 'react'
 import {useQuery} from '@apollo/client'
 import {FindManyCursosPersonasWhere,FindManyPersonasCountRelations} from 'src/graphql/cursos'
+import {FelicitacionesManyForId} from 'src/graphql/Felicitaciones'
 
 const ByUser = () => {
   const {id} = useParams()
-  const {data:DataPersonas,loading: LoadingPersonas} = useQuery(FindManyCursosPersonasWhere,{
+  const {data:DataPersonas,loading: LoadingPersonas} = useQuery(FelicitacionesManyForId,{
     variables:{
       "where": {
-        "personasId": {
-          "equals": parseInt(id)
+        "personaId": {
+          "equals":  parseInt(id)
         }
       }
     }
@@ -32,7 +33,7 @@ const ByUser = () => {
 
   return (
     <>
-      <UserDetail data={DataPersonas?.findManyCursosPersonas} data_count={DataCount?.findManyPersonas} loading_data_count={LoadingDataCount} loading={LoadingPersonas} />
+      <UserDetail data={DataPersonas?.findManyFelecitaciones} data_count={DataCount?.findManyPersonas} loading_data_count={LoadingDataCount} loading={LoadingPersonas} />
     </>
   );
 };
