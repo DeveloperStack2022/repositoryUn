@@ -50,7 +50,7 @@ const FormFelicitaciones = () => {
     const [DataPersonas, setDataPersonas] = useState<any[]>([]) 
     const [OpenModalMessage,setOpenModalMessage] = useState<{tipo:"success" | 'wargning' | 'error',message:string}>({tipo:'success',message:''})
     const [ModalDialogMessageActions,setModalDialogMessageActions] = useState<boolean>(false)
-    const [Value, setValue] = useState<string>("")
+    const [Value, setValue] = useState<{label:null | string,value:number}>({label:null,value:0})
     //TODO: REACT HOOKS FORM   
     const {handleSubmit,formState:{errors},control,reset} = useForm<ValidationSchema>({mode:'all'});
  
@@ -85,6 +85,7 @@ const FormFelicitaciones = () => {
             onCompleted: (data) => {
                 if(data.createOneFelecitaciones){
                     setOpenModalMessage({tipo:'success',message:'Se guardo correctamente'})
+                    setValue({label:null,value:0})
                     setModalDialogMessageActions(true)
                     return;
                 }
@@ -127,14 +128,12 @@ const FormFelicitaciones = () => {
                                 name="nombrePersona"
                                 render={(props) => (
                                     <Autocomplete
-                                        
                                         onChange={(_,data) => {
-                                            console.log(data)
-                                            // setValue()
+                                            setValue({label:data.label,value:data.value})
                                             props.field.onChange(data)
                                         }}
                                         options={DataPersonas} 
-                                        value={props.field.value}
+                                        value={Value.label}
                                         {...props}
                                         renderInput={ (params) => (
                                             <TextField  value={params.inputProps.value}  {...params} label={'Nombre Policia'} />

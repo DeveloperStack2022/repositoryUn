@@ -2,8 +2,9 @@ import UserDetail from './components/felicitaciones_details';
 import {useParams} from 'react-router-dom'
 import {useEffect} from 'react'
 import {useQuery} from '@apollo/client'
-import {FindManyCursosPersonasWhere,FindManyPersonasCountRelations} from 'src/graphql/cursos'
+import {FindManyPersonasCountRelations} from 'src/graphql/cursos'
 import {FelicitacionesManyForId} from 'src/graphql/Felicitaciones'
+import {Helmet} from 'react-helmet-async'
 
 const ByUser = () => {
   const {id} = useParams()
@@ -33,6 +34,9 @@ const ByUser = () => {
 
   return (
     <>
+      <Helmet>
+        <title>Historial - Felicitaciones</title>
+      </Helmet>
       <UserDetail data={DataPersonas?.findManyFelecitaciones} data_count={DataCount?.findManyPersonas} loading_data_count={LoadingDataCount} loading={LoadingPersonas} />
     </>
   );
