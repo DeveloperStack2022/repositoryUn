@@ -7,7 +7,8 @@ import {
   IconButton,
   DialogContent,
   Box,
-  Button
+  Button,
+  colors
 } from '@mui/material';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import ErrorIcon from '@mui/icons-material/Error';
@@ -46,18 +47,6 @@ const DialogContentCustom = styled(DialogContent)(
 `
 );
 
-const IconCustom = styled(Box)<{ tipo: string }>(
-  ({ tipo, theme }) => `
-    color: ${
-      tipo == 'success'
-        ? theme.colors.success.light
-        : tipo == 'error'
-        ? theme.colors.error.light
-        : theme.colors.warning.light
-    };
-    font-size:150px;
-`
-);
 
 interface IProps {
   open: boolean;
@@ -96,26 +85,27 @@ function DialogTitleCustom(props: IPropsDialogTitle) {
 
 const DialogStatus: FC<IProps> = ({ ...props }) => {
   const { open, handleClose, tipo, message, ...other } = props;
+  const {green} = colors;
   return (
     <DialogCustom open={open}>
       <DialogTitleCustom id="Dialog-title" onClose={handleClose}>
-        <Typography variant="subtitle1">Mensages</Typography>
+        <Typography component="h4" variant="h4"  >{tipo == 'success' ? "Correctamente":"Error"}</Typography>
       </DialogTitleCustom>
       <DialogContentCustom>
         {tipo == 'success' ? (
-          <CheckCircleIcon color={'success'} sx={{ fontSize: 150 }} />
+          <CheckCircleIcon  sx={{ fontSize: 150,color:green['A400'] }} />
         ) : tipo == 'error' ? (
           <ErrorIcon sx={{ fontSize: 150 }} />
         ) : (
           <InfoIcon sx={{ fontSize: 150 }} color="warning" />
         )}
-        <Typography component="h4" variant="h4">
+        <Typography variant="h5" >
           {message}
         </Typography>
-        <Button variant="contained" sx={{ my: 1, width: 250 }}>
+        {/* <Button variant="contained" sx={{ my: 1, width: 250 }}>
           Agregar mas
-        </Button>
-        <Button>Close</Button>
+        </Button> */}
+        <Button sx={{ my: 1, width: 250 }} onClick={handleClose}>Close</Button>
       </DialogContentCustom>
     </DialogCustom>
   );

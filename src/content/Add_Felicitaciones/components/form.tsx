@@ -84,7 +84,7 @@ const FormFelicitaciones = () => {
             },
             onCompleted: (data) => {
                 if(data.createOneFelecitaciones){
-                    setOpenModalMessage({tipo:'success',message:'Se guardo correctamente'})
+                    setOpenModalMessage({tipo:'success',message:'Se guardo'})
                     setValue({label:null,value:0})
                     setModalDialogMessageActions(true)
                     return;
@@ -187,16 +187,16 @@ const FormFelicitaciones = () => {
                                 name="causa"
                                 render={({ field }) => (
                                     <TextField
-                                    value={field.value  }
-                                    multiline
-                                    maxRows={2}
-                                    variant="outlined"
-                                    {...field}
-                                    label="Causa"
-                                    fullWidth
+                                        value={field.value}
+                                        multiline
+                                        maxRows={2}
+                                        variant="outlined"
+                                        {...field}
+                                        label="Causa"
+                                        fullWidth
                                     />
-                                    )}
-                                    />
+                                )}
+                            />
                         </Grid>
                     </Grid>
                 </LocalizationProvider>

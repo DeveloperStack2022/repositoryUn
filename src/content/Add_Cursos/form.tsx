@@ -11,14 +11,11 @@ import {Paper,Typography,Grid,Autocomplete,TextField,Button,FormControl,InputLab
 import DialogComponent from 'src/components/Dialog'
 import ModalCreatePersona from 'src/content/Add_Reunion/components/Modal_CreatePersona'
 
-const Persona = z.object({
-    label:z.string(),
-    id:z.number()
-})
-
-
 const validateSchema = z.object({
-    persona:Persona,
+    persona:z.object({
+        label:z.string(),
+        id:z.number()
+    }),
     nombre_curso:z.string(),
     tipo_curso:z.number(),
     lugar:z.string(),
@@ -34,25 +31,24 @@ type ValidationSchema = z.infer<typeof validateSchema>
 //Graphql - 
 import {findManyPersonas,findManyPersonasT,Tipo_RS,Tipo_RST,CreateOneCursos,CreateOneCursosT,CreateOneCursosPersonasVariablesT,CreateOneCursosPersonas} from './graphql'
 
-type DataPersonas =  {label:string,id:number}
-
 
 const AddReunion = () => {
     //HACK:States 
     const [PersonasCurso, setPersonasCurso] = useState<{label:string,id:number}>({label:'',id:0})
     const [TipoAsistencia, setTipoAsistencia] = useState<{value:number,children:string}>({value:0,children:''})
-    const [DataPersonasState,setDataPersonasState] = useState<DataPersonas[]>([])
+    const [DataPersonasState,setDataPersonasState] = useState<any[]>([])
     const [OpenModal,setOpenModal] = useState<boolean>(false)
     const [OpenModalCreate,setOpenModalCreate] = useState<boolean>(false)
     const [TypeState,setTypeState] = useState<{type:"success" | "error" | 'wargning',message:string}>({type:"success",message:""})
     const [AddPersona, setAddPersona] = useState<number>(0)
+    const [Value, setValue] = useState<{label: null| string,value:number}>({label:null,value:0}); //FIXME: valores por defecto {label:null,value:0}
 
     //HANDLE: REACT HOOKS FORM
     const {handleSubmit,control,formState:{errors},reset} = useForm<ValidationSchema>({mode:'all'})
     // GraphQL - Querys 
     const {data,loading:LoadingQueryPersonas,error,refetch:RefetchPersonas} = useQuery<findManyPersonasT>(findManyPersonas,{
         onCompleted: (data) => {
-            const parseData:DataPersonas[] = data.findManyPersonas.map(elem => {
+            const parseData = data.findManyPersonas.map(elem => {
                 return {
                     label:`${elem.gradoPolicial} ${elem.nombres} ${elem.apellidos}`, 
                     id: elem.id}
@@ -154,10 +150,12 @@ const AddReunion = () => {
                                     <Autocomplete
                                         options={DataPersonasState.length > 0 ? DataPersonasState : []}
                                         {...props}
+                                        value={Value.label}
                                         renderInput={(params) => (
                                                 <TextField {...params} label={'Nombre Policia'} />
                                                 )}
                                         onChange={(_,data) => {
+                                            setValue({label:data.label,value:data.id})
                                             setPersonasCurso({label:data.label,id: data.id})
                                             props.field.onChange(data)
                                         }}
@@ -169,7 +167,7 @@ const AddReunion = () => {
                                             size="small"
                                                 sx={{ width: '100%' }}
                                                 >
-                                            Crear nueva persona
+                                                Crear nueva persona
                                             </Button>
                                         }
                                         /> 
